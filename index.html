@@ -694,6 +694,8 @@
         <!-- User Profile Section -->
         <div id="userSection" class="user-profile" style="display:none; margin-left:auto;">
             <span id="userEmail"></span>
+            <button id="adminPanelBtn" class="btn btn-secondary" onclick="openAdminPanel()"
+                style="display:none; font-size:12px; padding:5px 10px;">👑 管理</button>
             <button class="btn-logout" onclick="signOut()">退出</button>
         </div>
         <button id="loginBtn" class="btn btn-primary" style="margin-left:auto;" onclick="openAuthModal()">👤
@@ -739,6 +741,20 @@
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="handleResume(false)">🔄 重新开始</button>
                 <button class="btn btn-primary" onclick="handleResume(true)">🔙 继续练习</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-card" style="width: 600px; max-width: 90%;">
+            <div class="modal-title">👑 管理员面板 - 用户审核</div>
+            <div id="pendingUsersList" style="max-height: 400px; overflow-y: auto; margin: 20px 0;">
+                <p style="text-align:center; color:#666;">加载中...</p>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-secondary" onclick="closeAdminPanel()">关闭</button>
+                <button class="btn btn-primary" onclick="loadPendingUsers()">🔄 刷新</button>
             </div>
         </div>
     </div>
@@ -946,17 +962,95 @@
             currentUser = user;
             const userSection = document.getElementById('userSection');
             const loginBtn = document.getElementById('loginBtn');
+            const adminPanelBtn = document.getElementById('adminPanelBtn');
 
             if (currentUser) {
                 document.getElementById('userEmail').innerText = currentUser.email;
                 userSection.style.display = 'flex';
                 loginBtn.style.display = 'none';
+
+                // Show admin button if user is admin
+                if (currentUser.is_admin) {
+                    adminPanelBtn.style.display = 'inline-block';
+                }
+
                 // Load cloud data
                 CloudPersistence.load();
             } else {
                 userSection.style.display = 'none';
                 loginBtn.style.display = 'block';
+                if (adminPanelBtn) adminPanelBtn.style.display = 'none';
                 autoLoadCSV(); // Fallback to local
+            }
+        }
+
+        // --- Admin Panel Functions ---
+        function openAdminPanel() {
+            document.getElementById('adminModal').style.display = 'flex';
+            loadPendingUsers();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        async function loadPendingUsers() {
+            const container = document.getElementById('pendingUsersList');
+            container.innerHTML = '<p style="text-align:center; color:#666;">加载中...</p>';
+
+            try {
+                const response = await API.request('/admin/pending-users');
+                const users = response.users || [];
+
+                if (users.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#666;">🎉 没有待审核用户</p>';
+                    return;
+                }
+
+                container.innerHTML = users.map(user => `
+                    <div style="border: 1px solid var(--border-color); padding: 15px; margin: 10px 0; border-radius: 8px; background: var(--card-bg);">
+                        <div style="margin-bottom: 10px;">
+                            <strong>📧 邮箱:</strong> ${user.email}<br>
+                            <span style="font-size: 12px; color: #666;">注册时间: ${new Date(user.created_at).toLocaleString('zh-CN')}</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="approveUser(${user.id})" style="background-color: #28a745;">✅ 批准</button>
+                            <button class="btn btn-secondary" onclick="rejectUser(${user.id})" style="background-color: #dc3545; color: white;">❌ 拒绝</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<p style="text-align:center; color:#dc3545;">❌ 加载失败: ' + error.message + '</p>';
+            }
+        }
+
+        async function approveUser(userId) {
+            if (!confirm('确定批准该用户？')) return;
+
+            try {
+                await API.request('/admin/approve-user', {
+                    method: 'POST',
+                    body: JSON.stringify({ userId })
+                });
+                alert('✅ 已批准！');
+                loadPendingUsers(); // Refresh list
+            } catch (error) {
+                alert('❌ 操作失败: ' + error.message);
+            }
+        }
+
+        async function rejectUser(userId) {
+            if (!confirm('确定拒绝该用户？该操作将删除用户账号。')) return;
+
+            try {
+                await API.request('/admin/reject-user', {
+                    method: 'POST',
+                    body: JSON.stringify({ userId })
+                });
+                alert('✅ 已拒绝并删除！');
+                loadPendingUsers(); // Refresh list
+            } catch (error) {
+                alert('❌ 操作失败: ' + error.message);
             }
         }
 
