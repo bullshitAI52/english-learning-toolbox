@@ -3,6 +3,25 @@
 This project contains a collection of Python scripts and web tools for English word practice and Word document processing.
 本项目包含一系列用于英语单词练习和 Word 文档处理的 Python 脚本及网页工具。
 
+## 🌟 Project Highlights (项目亮点)
+
+这是一个功能完整的单词处理与练习闭环工具箱：
+
+1.  **🛠️ 数据源准备 (Data Preparation)**
+    - 提供 **Word 表格提取工具**，批量将文档资料提取为 Excel。
+    - 提供 **音标清洗工具**，一键净化文本数据。
+    - 轻松将杂乱的文档资料整理为标准的 `CSV/Excel` 单词表。
+
+2.  **📱 多平台练习 (Multi-platform Practice)**
+    - **网页端 (`index.html`)**：随时随地练习，支持**生词本**、**易错题**自动记录、语音朗读、打卡分享。
+    - **Anki 端 (`anki_generator.py`)**：一键生成带发音的 Anki 记忆库 (`.apkg`)，适合记忆曲线复习。
+    - **命令行端 (`word_typer.py`)**：极客风的终端拼写练习工具。
+
+3.  **⚙️ 工程化完善 (Engineering)**
+    - **文档齐全**：中英双语说明，清晰易懂。
+    - **开箱即用**：依赖管理清晰，环境配置简单。
+    - **云端同步**：代码托管于 GitHub，网页练习工具直接通过 GitHub Pages 在线访问。
+
 ## 📂 Tools List (工具列表)
 
 ### 🅰️ English Practice Tools (英语练习工具)
