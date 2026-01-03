@@ -680,7 +680,7 @@
             <button class="btn btn-primary">📁 选择文件</button>
         </div>
 
-        <div class="file-status">正在加载...</div>
+        <div class="file-status">👆 请选择CSV词库文件,或使用示例数据</div>
 
         <button id="timerBtn" class="btn btn-secondary">⏱️ 开始计时</button>
         <span id="elapsedTimeDisplay">已用时间: 0 秒</span>
@@ -741,13 +741,22 @@
         // --- Supabase Configuration ---
         // FILL THESE WITH YOUR PROJECT CREDENTIALS
         const SUPABASE_URL = 'https://xszyxoipwpfhiulbmgwk.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzenlob2lwd3BmaGl1bGJtZ3drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU3OTU5NzEsImV4cCI6MjA1MTM3MTk3MX0.pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J-LbVrBXQWBVo';
 
         let supabase = null;
         let currentUser = null;
 
-        if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Safely initialize Supabase with error handling
+        try {
+            if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase initialized successfully');
+            } else {
+                console.warn('Supabase not configured or library not loaded');
+            }
+        } catch (error) {
+            console.error('Failed to initialize Supabase:', error);
+            supabase = null;
         }
 
         let allWordData = []; // Store complete dataset
@@ -836,12 +845,25 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
 
             if (supabase) {
-                const { data: { session } } = await supabase.auth.getSession();
-                updateUserSession(session);
+                try {
+                    const { data, error } = await supabase.auth.getSession();
 
-                supabase.auth.onAuthStateChange((_event, session) => {
-                    updateUserSession(session);
-                });
+                    if (error) {
+                        console.warn("Supabase session check failed:", error);
+                        updateUserSession(null);
+                    } else if (data && data.session) {
+                        updateUserSession(data.session);
+                    } else {
+                        updateUserSession(null);
+                    }
+
+                    supabase.auth.onAuthStateChange((_event, session) => {
+                        updateUserSession(session);
+                    });
+                } catch (e) {
+                    console.error("Supabase init error:", e);
+                    updateUserSession(null); // Fallback to local mode
+                }
             } else {
                 console.warn("Supabase not configured.");
                 autoLoadCSV();
@@ -1371,8 +1393,10 @@
 
                 // Add visual cue
                 const status = document.querySelector('.file-status');
-                status.innerHTML += ' <span style="font-size:10px; color:#999;">(自动恢复)</span>';
-                hideFileInput();
+                status.innerHTML = `已加载: ${lastSession.filename} <span style="font-size:10px; color:#999;">(自动恢复)</span>`;
+                status.style.color = '#28a745';
+                // Keep file input visible so user can switch files anytime
+                // hideFileInput();
 
                 // Check saved page
                 const savedPage = DataPersistence.loadPage();
@@ -1387,6 +1411,7 @@
 
             // Priority 2: Auto-detect local files
             const csvFiles = [
+                'anki_words.csv',
                 'B3U7 ART P113.csv',
                 'words.csv',
                 'vocabulary.csv',
@@ -1395,13 +1420,14 @@
 
             for (let filename of csvFiles) {
                 try {
-                    const response = await fetch(filename);
+                    const response = await fetch(encodeURIComponent(filename));
                     if (response.ok) {
                         const text = await response.text();
                         if (text.trim()) {
                             console.log(`成功加载文件: ${filename}`);
                             parseCSVData(text, filename);
-                            hideFileInput();
+                            // Keep file input visible so user can switch files anytime
+                            // hideFileInput();
                             return;
                         }
                     }
@@ -1473,7 +1499,7 @@
                 { english: 'mobile', chinese: '移动的' },
                 { english: 'tablet', chinese: '平板电脑' }
             ];
-            document.querySelector('.file-status').textContent = '使用示例数据 (5个单词)';
+            document.querySelector('.file-status').innerHTML = '📝 当前使用示例数据 (5个单词)<br><span style="font-size:11px;">💡 点击上方"📁 选择文件"导入您的CSV词库</span>';
             document.querySelector('.file-status').style.color = '#ffc107';
 
             filterData();
