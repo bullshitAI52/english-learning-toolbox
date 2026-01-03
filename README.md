@@ -98,4 +98,4 @@ This project contains a collection of Python scripts and web tools for English w
     - Format: `Word,Meaning` (e.g., `apple,苹果`).
 
 ## 🚀 Live Demo (在线演示)
-[https://bullshitai52.github.io/word-spelling-practice/](https://bullshitai52.github.io/word-spelling-practice/)
+[https://bullshitAI52.github.io/english-learning-toolbox/](https://bullshitAI52.github.io/english-learning-toolbox/)
