@@ -1383,33 +1383,59 @@
 
         // 页面加载时自动尝试加载同目录下的CSV文件
         async function autoLoadCSV() {
-            // Priority 1: LocalStorage Persistence
             console.log("正在尝试自动加载数据...");
-            const lastSession = DataPersistence.load();
-            if (lastSession) {
-                console.log('从上次会话恢复数据:', lastSession.filename);
-                // Load data but don't render page immediately if we need to ask user
-                parseCSVData(lastSession.content, lastSession.filename, false);
+            
+            const lastFilename = localStorage.getItem('last_csv_filename');
+            const savedPage = DataPersistence.loadPage();
+            let loaded = false;
 
-                // Add visual cue
-                const status = document.querySelector('.file-status');
-                status.innerHTML = `已加载: ${lastSession.filename} <span style="font-size:10px; color:#999;">(自动恢复)</span>`;
-                status.style.color = '#28a745';
-                // Keep file input visible so user can switch files anytime
-                // hideFileInput();
+            // Priority 1: Try to refresh from server (Fixes stale cache issue)
+            if (lastFilename) {
+                try {
+                    // Try to fetch using the filename (decoding it to ensure path is correct if encoded)
+                    // If it's a local file name that doesn't exist on server, this simply fails (404)
+                    const response = await fetch(lastFilename);
+                    if (response.ok) {
+                        const text = await response.text();
+                        if (text && text.trim().length > 0) {
+                            console.log('从服务器刷新文件成功:', lastFilename);
+                            parseCSVData(text, lastFilename, true); // Update cache with new content
+                            
+                            const status = document.querySelector('.file-status');
+                            status.innerHTML = `已加载: ${lastFilename} <span style="font-size:10px; color:#999;">(已更新)</span>`;
+                            status.style.color = '#28a745';
 
-                // Check saved page
-                const savedPage = DataPersistence.loadPage();
-                if (savedPage > 1) {
-                    showResumeModal(savedPage);
-                } else {
-                    renderPage(1);
-                    renderPagination();
+                            if (savedPage > 1) showResumeModal(savedPage);
+                            else { renderPage(1); renderPagination(); }
+                            loaded = true;
+                        }
+                    }
+                } catch (e) {
+                    // Fetch failed (network error or not a http file), fall back to cache
+                    console.log('服务器文件获取失败, 转用缓存:', e);
                 }
-                return;
             }
 
-            // Priority 2: Auto-detect local files
+            // Priority 2: Use cached content (For offline mode or local uploaded files)
+            if (!loaded) {
+                const lastSession = DataPersistence.load();
+                if (lastSession) {
+                    console.log('从缓存/上次会话恢复数据:', lastSession.filename);
+                    parseCSVData(lastSession.content, lastSession.filename, false);
+
+                    const status = document.querySelector('.file-status');
+                    status.innerHTML = `已加载: ${lastSession.filename} <span style="font-size:10px; color:#999;">(自动恢复)</span>`;
+                    status.style.color = '#28a745';
+
+                    if (savedPage > 1) showResumeModal(savedPage);
+                    else { renderPage(1); renderPagination(); }
+                    loaded = true;
+                }
+            }
+
+            if (loaded) return;
+
+            // Priority 3: Auto-detect local files (Default list)
             const csvFiles = [
                 'anki_words.csv',
                 'B3U7 ART P113.csv',
@@ -1424,10 +1450,8 @@
                     if (response.ok) {
                         const text = await response.text();
                         if (text.trim()) {
-                            console.log(`成功加载文件: ${filename}`);
+                            console.log(`成功加载默认文件: ${filename}`);
                             parseCSVData(text, filename);
-                            // Keep file input visible so user can switch files anytime
-                            // hideFileInput();
                             return;
                         }
                     }
@@ -1436,7 +1460,7 @@
                 }
             }
 
-            // 如果没有找到CSV文件，显示示例数据和文件选择按钮
+            // 如果没有找到CSV文件，显示示例数据
             console.log('未找到CSV文件，显示示例数据');
             showExampleData();
         }
