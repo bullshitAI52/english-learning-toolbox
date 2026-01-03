@@ -1362,6 +1362,7 @@
         // 页面加载时自动尝试加载同目录下的CSV文件
         async function autoLoadCSV() {
             // Priority 1: LocalStorage Persistence
+            console.log("正在尝试自动加载数据...");
             const lastSession = DataPersistence.load();
             if (lastSession) {
                 console.log('从上次会话恢复数据:', lastSession.filename);
@@ -1480,14 +1481,7 @@
             renderPagination();
         }
 
-        // 页面加载完成后自动尝试加载CSV
-        document.addEventListener('DOMContentLoaded', () => {
-            // Theme Initialization
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
 
-            autoLoadCSV();
-        });
 
         // --- Theme Feature ---
         function toggleTheme() {
