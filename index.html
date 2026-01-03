@@ -1030,6 +1030,8 @@
                 // Show admin button if user is admin
                 if (currentUser.is_admin) {
                     adminPanelBtn.style.display = 'inline-block';
+                    // Load pending users count for badge
+                    loadPendingCount();
                 }
 
                 // Enable file selection for logged-in users
@@ -1053,6 +1055,23 @@
         }
 
         // --- Admin Panel Functions ---
+        async function loadPendingCount() {
+            try {
+                const response = await API.request('/admin/pending-users');
+                const count = (response.users || []).length;
+                const badge = document.getElementById('adminBadge');
+
+                if (count > 0 && badge) {
+                    badge.innerText = count;
+                    badge.style.display = 'block';
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Failed to load pending count:', error);
+            }
+        }
+
         function openAdminPanel() {
             document.getElementById('adminModal').style.display = 'flex';
             loadPendingUsers();
@@ -1102,6 +1121,7 @@
                 });
                 alert('✅ 已批准！');
                 loadPendingUsers(); // Refresh list
+                loadPendingCount(); // Update badge
             } catch (error) {
                 alert('❌ 操作失败: ' + error.message);
             }
@@ -1117,6 +1137,7 @@
                 });
                 alert('✅ 已拒绝并删除！');
                 loadPendingUsers(); // Refresh list
+                loadPendingCount(); // Update badge
             } catch (error) {
                 alert('❌ 操作失败: ' + error.message);
             }
