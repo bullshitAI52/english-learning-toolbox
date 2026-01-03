@@ -580,7 +580,6 @@
             font-size: 20px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ... existing styles ... */
 
@@ -745,26 +744,91 @@
     </div>
 
     <script>
-        // --- Supabase Configuration ---
-        // FILL THESE WITH YOUR PROJECT CREDENTIALS
-        const SUPABASE_URL = 'https://xszyxoipwpfhiulbmgwk.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J';
+        // --- Backend API Configuration ---
+        // CHANGE THIS TO YOUR SERVER URL
+        const API_BASE_URL = 'http://localhost:3000/api';
 
-        let supabase = null;
         let currentUser = null;
+        let authToken = null;
 
-        // Safely initialize Supabase with error handling
-        try {
-            if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && window.supabase) {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase initialized successfully');
-            } else {
-                console.warn('Supabase not configured or library not loaded');
+        // API Client
+        const API = {
+            async request(endpoint, options = {}) {
+                const url = `${API_BASE_URL}${endpoint}`;
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+
+                try {
+                    const response = await fetch(url, {
+                        ...options,
+                        headers
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Request failed');
+                    }
+
+                    return data;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            },
+
+            auth: {
+                async register(email, password) {
+                    return await API.request('/auth/register', {
+                        method: 'POST',
+                        body: JSON.stringify({ email, password })
+                    });
+                },
+
+                async login(email, password) {
+                    return await API.request('/auth/login', {
+                        method: 'POST',
+                        body: JSON.stringify({ email, password })
+                    });
+                },
+
+                async getMe() {
+                    return await API.request('/auth/me');
+                }
+            },
+
+            progress: {
+                async get() {
+                    return await API.request('/progress');
+                },
+
+                async update(data) {
+                    return await API.request('/progress', {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                }
+            },
+
+            stats: {
+                async getAll() {
+                    return await API.request('/stats');
+                },
+
+                async update(word, correct, wrong, last_practiced) {
+                    return await API.request('/stats', {
+                        method: 'POST',
+                        body: JSON.stringify({ word, correct, wrong, last_practiced })
+                    });
+                }
             }
-        } catch (error) {
-            console.error('Failed to initialize Supabase:', error);
-            supabase = null;
-        }
+        };
 
         let allWordData = []; // Store complete dataset
         let displayData = []; // Store filtered data for display
@@ -800,14 +864,10 @@
         }
 
         async function handleAuthAction() {
-            if (!supabase) {
-                alert('请先配置 Supabase URL 和 Key！\nPlease configure Supabase API keys in the code.');
-                return;
-            }
-
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
             const errorEl = document.getElementById('authError');
+            const btn = document.getElementById('authActionBtn');
 
             errorEl.style.display = 'none';
 
@@ -817,68 +877,73 @@
                 return;
             }
 
-            let result;
+            const originalText = btn.innerText;
+            btn.innerText = '处理中...';
+            btn.disabled = true;
+
             try {
+                let result;
                 if (isLoginMode) {
-                    result = await supabase.auth.signInWithPassword({ email, password });
+                    result = await API.auth.login(email, password);
                 } else {
-                    result = await supabase.auth.signUp({ email, password });
+                    result = await API.auth.register(email, password);
                 }
 
-                if (result.error) throw result.error;
+                // Save token and user
+                authToken = result.token;
+                localStorage.setItem('authToken', authToken);
+                currentUser = result.user;
 
-                if (!isLoginMode && result.data.user && !result.data.session) {
-                    alert('注册成功！请去邮箱确认验证邮件即可登录。');
-                } else {
-                    closeAuthModal();
-                    // Auth state change will handle the rest
+                closeAuthModal();
+                updateUserSession(currentUser);
+
+                if (!isLoginMode) {
+                    alert('✅ 注册成功！');
                 }
 
             } catch (err) {
                 errorEl.innerText = err.message;
                 errorEl.style.display = 'block';
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
         async function signOut() {
-            if (supabase) await supabase.auth.signOut();
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
             window.location.reload();
         }
 
-        // Auth Listener
+        // Auth Init
         document.addEventListener('DOMContentLoaded', async () => {
             // Theme Init
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
 
-            if (supabase) {
+            // Check for saved token
+            authToken = localStorage.getItem('authToken');
+
+            if (authToken) {
                 try {
-                    const { data, error } = await supabase.auth.getSession();
-
-                    if (error) {
-                        console.warn("Supabase session check failed:", error);
-                        updateUserSession(null);
-                    } else if (data && data.session) {
-                        updateUserSession(data.session);
-                    } else {
-                        updateUserSession(null);
-                    }
-
-                    supabase.auth.onAuthStateChange((_event, session) => {
-                        updateUserSession(session);
-                    });
-                } catch (e) {
-                    console.error("Supabase init error:", e);
-                    updateUserSession(null); // Fallback to local mode
+                    const result = await API.auth.getMe();
+                    currentUser = result.user;
+                    updateUserSession(currentUser);
+                } catch (error) {
+                    console.warn('Token invalid or expired:', error);
+                    localStorage.removeItem('authToken');
+                    authToken = null;
+                    updateUserSession(null);
                 }
             } else {
-                console.warn("Supabase not configured.");
-                autoLoadCSV();
+                updateUserSession(null);
             }
         });
 
-        function updateUserSession(session) {
-            currentUser = session ? session.user : null;
+        function updateUserSession(user) {
+            currentUser = user;
             const userSection = document.getElementById('userSection');
             const loginBtn = document.getElementById('loginBtn');
 
@@ -925,34 +990,39 @@
         // --- Persistence Manager ---
         const CloudPersistence = {
             async saveProgress(filename, content, page) {
-                if (!currentUser || !supabase) return;
+                if (!currentUser || !authToken) return;
 
-                const { error } = await supabase
-                    .from('user_progress')
-                    .upsert({ user_id: currentUser.id, last_file: filename, last_content: content, last_page: page }, { onConflict: 'user_id' });
-
-                if (error) console.error('Cloud save failed:', error);
+                try {
+                    await API.progress.update({
+                        last_file: filename,
+                        last_content: content,
+                        last_page: page
+                    });
+                } catch (error) {
+                    console.error('Cloud save failed:', error);
+                }
             },
 
             async load() {
-                if (!currentUser || !supabase) return;
+                if (!currentUser || !authToken) return;
 
-                const { data, error } = await supabase
-                    .from('user_progress')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
+                try {
+                    const { progress } = await API.progress.get();
 
-                if (data) {
-                    // Update local state to match cloud
-                    localStorage.setItem('last_csv_filename', data.last_file);
-                    localStorage.setItem('last_csv_content', data.last_content);
-                    localStorage.setItem('last_page', data.last_page);
+                    if (progress && progress.last_file) {
+                        // Update local state to match cloud
+                        localStorage.setItem('last_csv_filename', progress.last_file);
+                        localStorage.setItem('last_csv_content', progress.last_content);
+                        localStorage.setItem('last_page', progress.last_page);
 
-                    // Trigger load
-                    autoLoadCSV();
-                } else if (!error) {
-                    // No cloud data, maybe first sync?
+                        // Trigger load
+                        autoLoadCSV();
+                    } else {
+                        // No cloud data, first sync
+                        autoLoadCSV();
+                    }
+                } catch (error) {
+                    console.error('Cloud load failed:', error);
                     autoLoadCSV();
                 }
             }
@@ -1002,21 +1072,22 @@
                 }
 
                 // If logged in, sync with cloud
-                if (currentUser && supabase) {
-                    const { data } = await supabase
-                        .from('user_stats')
-                        .select('word, correct, wrong, last_practiced')
-                        .eq('user_id', currentUser.id);
+                if (currentUser && authToken) {
+                    try {
+                        const { stats } = await API.stats.getAll();
 
-                    if (data) {
-                        data.forEach(row => {
-                            this.data[row.word] = {
-                                correct: row.correct,
-                                wrong: row.wrong,
-                                lastPracticed: row.last_practiced
-                            };
-                        });
-                        this.saveFunc(); // Update local storage with connection result
+                        if (stats) {
+                            stats.forEach(row => {
+                                this.data[row.word] = {
+                                    correct: row.correct,
+                                    wrong: row.wrong,
+                                    lastPracticed: row.last_practiced
+                                };
+                            });
+                            this.saveFunc(); // Update local storage
+                        }
+                    } catch (error) {
+                        console.error('Failed to load stats from cloud:', error);
                     }
                 }
             },
@@ -1028,16 +1099,12 @@
             async save(word, stat) {
                 this.saveFunc();
 
-                if (currentUser && supabase && word) {
-                    await supabase
-                        .from('user_stats')
-                        .upsert({
-                            user_id: currentUser.id,
-                            word: word,
-                            correct: stat.correct,
-                            wrong: stat.wrong,
-                            last_practiced: stat.lastPracticed
-                        }, { onConflict: 'user_id, word' });
+                if (currentUser && authToken && word) {
+                    try {
+                        await API.stats.update(word, stat.correct, stat.wrong, stat.lastPracticed);
+                    } catch (error) {
+                        console.error('Failed to save stat to cloud:', error);
+                    }
                 }
             },
 
