@@ -697,7 +697,11 @@
         <div id="userSection" class="user-profile" style="display:none; margin-left:auto;">
             <span id="userEmail"></span>
             <button id="adminPanelBtn" class="btn btn-secondary" onclick="openAdminPanel()"
-                style="display:none; font-size:12px; padding:5px 10px;">👑 管理</button>
+                style="display:none; font-size:12px; padding:5px 10px; position:relative;">
+                👑 管理
+                <span id="adminBadge"
+                    style="display:none; position:absolute; top:-5px; right:-5px; background:#dc3545; color:white; border-radius:10px; padding:2px 6px; font-size:10px; font-weight:bold;"></span>
+            </button>
             <button class="btn-logout" onclick="signOut()">退出</button>
         </div>
         <button id="loginBtn" class="btn btn-primary" style="margin-left:auto;" onclick="openAuthModal()">👤
