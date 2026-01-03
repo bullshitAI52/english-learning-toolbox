@@ -579,6 +579,216 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 20px;
         }
+
+        /* ========== Mobile Responsive Styles ========== */
+        @media (max-width: 768px) {
+
+            /* Header adjustments */
+            h1 {
+                font-size: 20px;
+                padding: 12px;
+            }
+
+            /* Control bar - stack vertically */
+            .control-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .mode-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .mode-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            /* File input and buttons */
+            .file-input-wrapper {
+                width: 100%;
+            }
+
+            .file-status {
+                font-size: 12px;
+            }
+
+            /* User profile section */
+            .user-profile {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 5px;
+                width: 100%;
+            }
+
+            .user-profile span {
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .user-profile button {
+                width: 100%;
+            }
+
+            #loginBtn {
+                width: 100% !important;
+                margin: 5px 0 !important;
+            }
+
+            /* Container and cards */
+            .container {
+                padding: 10px;
+            }
+
+            .word-card {
+                padding: 15px;
+                margin: 10px 0;
+            }
+
+            .word-main {
+                font-size: 22px;
+            }
+
+            .phonetic {
+                font-size: 14px;
+            }
+
+            .chinese {
+                font-size: 16px;
+            }
+
+            /* Spelling container */
+            .fullscreen-spell {
+                padding: 20px;
+            }
+
+            #spellWord {
+                font-size: 32px;
+            }
+
+            #spellPrompt {
+                font-size: 14px;
+            }
+
+            #spellInput {
+                font-size: 18px;
+                padding: 12px;
+            }
+
+            .spell-hint {
+                font-size: 12px;
+            }
+
+            /* Modal adjustments */
+            .modal-card {
+                width: 95% !important;
+                max-width: 95% !important;
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .modal-text {
+                font-size: 14px;
+            }
+
+            /* Buttons */
+            .btn {
+                font-size: 13px;
+                padding: 8px 15px;
+            }
+
+            .btn-logout {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            /* Pagination */
+            .pagination button {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+
+            /* Timer and screenshot buttons */
+            #timerBtn,
+            #screenshotBtn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            #elapsedTimeDisplay {
+                font-size: 12px;
+            }
+
+            /* Help modal content */
+            #helpModal .modal-card {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            #helpModal h3 {
+                font-size: 16px;
+            }
+
+            #helpModal li {
+                font-size: 13px;
+            }
+
+            /* Admin panel */
+            #adminPanelBtn {
+                margin-left: 0 !important;
+            }
+        }
+
+        /* Extra small devices (phones in portrait) */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+
+            .mode-btn {
+                font-size: 10px;
+                padding: 5px 8px;
+            }
+
+            .word-main {
+                font-size: 20px;
+            }
+
+            #spellWord {
+                font-size: 28px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 7px 12px;
+            }
+
+            .modal-card {
+                padding: 12px;
+            }
+        }
+
+        /* Landscape mode adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .fullscreen-spell {
+                padding: 10px;
+            }
+
+            #spellWord {
+                font-size: 24px;
+            }
+
+            #spellInput {
+                padding: 8px;
+            }
+        }
     </style>
     <style>
         /* ... existing styles ... */
