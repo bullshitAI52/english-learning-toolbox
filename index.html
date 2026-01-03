@@ -681,12 +681,12 @@
 
         <div class="time-display" id="currentTime"></div>
 
-        <div class="file-input-wrapper">
-            <input type="file" id="fileInput" accept=".txt,.csv">
-            <button class="btn btn-primary">📁 选择文件</button>
+        <div class="file-input-wrapper" id="fileInputWrapper">
+            <input type="file" id="fileInput" accept=".txt,.csv" disabled>
+            <button class="btn btn-primary" id="fileSelectBtn" disabled>📁 选择文件</button>
         </div>
 
-        <div class="file-status">👆 请选择CSV词库文件,或使用示例数据</div>
+        <div class="file-status" id="fileStatus">⚠️ 请先登录后才能导入词库</div>
 
         <button id="timerBtn" class="btn btn-secondary">⏱️ 开始计时</button>
         <span id="elapsedTimeDisplay">已用时间: 0 秒</span>
