@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { router: authRouter } = require('./auth');
 const dataRouter = require('./routes');
+const adminRouter = require('./admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api', dataRouter);
+app.use('/api', adminRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

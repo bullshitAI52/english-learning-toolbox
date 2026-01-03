@@ -54,13 +54,13 @@ router.post('/register', async (req, res) => {
                     [this.lastID]
                 );
 
-                // Generate token
-                const token = jwt.sign({ id: this.lastID, email }, JWT_SECRET, { expiresIn: '7d' });
+                // Generate token (even for unapproved users)
+                const token = jwt.sign({ id: this.lastID, email, is_admin: 0 }, JWT_SECRET, { expiresIn: '7d' });
 
                 res.json({
-                    message: 'Registration successful',
+                    message: '注册成功！您的账号正在等待管理员审核。',
                     token,
-                    user: { id: this.lastID, email }
+                    user: { id: this.lastID, email, approved: 0, is_admin: 0 }
                 });
             }
         );
@@ -86,6 +86,11 @@ router.post('/login', (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        // Check if user is approved
+        if (!user.approved && !user.is_admin) {
+            return res.status(403).json({ error: '您的账号正在审核中，请等待管理员批准' });
+        }
+
         // Verify password
         const isValid = await bcrypt.compare(password, user.password_hash);
         if (!isValid) {
@@ -93,19 +98,19 @@ router.post('/login', (req, res) => {
         }
 
         // Generate token
-        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: user.id, email: user.email, is_admin: user.is_admin || 0 }, JWT_SECRET, { expiresIn: '7d' });
 
         res.json({
             message: 'Login successful',
             token,
-            user: { id: user.id, email: user.email }
+            user: { id: user.id, email: user.email, is_admin: user.is_admin || 0 }
         });
     });
 });
 
 // Get current user
 router.get('/me', authenticateToken, (req, res) => {
-    db.get('SELECT id, email, created_at FROM users WHERE id = ?', [req.user.id], (err, user) => {
+    db.get('SELECT id, email, is_admin, approved, created_at FROM users WHERE id = ?', [req.user.id], (err, user) => {
         if (err || !user) {
             return res.status(404).json({ error: 'User not found' });
         }
