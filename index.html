@@ -439,6 +439,51 @@
         const WORDS_PER_PAGE = 3;
         const youdaoAPI = 'https://dict.youdao.com/dictvoice?audio=';
 
+        // Base64 Simple Ding Sound
+        const correctSoundBase64 = "data:audio/wav;base64,UklGRl9vTNEAAXdvYmtuPgPNEDYAAA..."; // Placeholder for short ding, let's use a real short base64 or a free url? 
+        // Using a short beep URL for simplicity to avoid huge file, or generated one.
+        // Actually, best to use a web audio API oscillator for zero-dependency "ding".
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function playCorrectSound() {
+            if (audioContext.state === 'suspended') audioContext.resume();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // "Ding" effect: High pitch decaying fast
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime); // High C
+            oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // --- Persistence Manager ---
+        const DataPersistence = {
+            save(filename, content) {
+                try {
+                    localStorage.setItem('last_csv_filename', filename);
+                    localStorage.setItem('last_csv_content', content);
+                } catch (e) { console.error('Storage full?', e); }
+            },
+
+            load() {
+                const filename = localStorage.getItem('last_csv_filename');
+                const content = localStorage.getItem('last_csv_content');
+                if (filename && content) {
+                    return { filename, content };
+                }
+                return null;
+            }
+        };
+
         // --- Stats Manager ---
         const WordStats = {
             storageKey: 'word_spelling_stats',
@@ -680,6 +725,15 @@
             }
         }
 
+        // Mobile Keyboard Fix: Scroll to center on focus
+        document.addEventListener('focus', (e) => {
+            if (e.target.tagName === 'INPUT') {
+                setTimeout(() => {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        }, true);
+
         function checkSpelling(input, correctWord, icon) {
             const userInput = input.value.trim().toLowerCase();
             const correct = correctWord.toLowerCase();
@@ -701,6 +755,7 @@
                 if (!input.dataset.solved) {
                     WordStats.update(correctWord, true);
                     input.dataset.solved = "true";
+                    playCorrectSound(); // Play Ding!
                     // Refresh stats view? No, might re-render and lose focus. 
                     // Let's just update backend. Next render will show it.
                 }
@@ -792,6 +847,20 @@
 
         // 页面加载时自动尝试加载同目录下的CSV文件
         async function autoLoadCSV() {
+            // Priority 1: LocalStorage Persistence
+            const lastSession = DataPersistence.load();
+            if (lastSession) {
+                console.log('从上次会话恢复数据:', lastSession.filename);
+                parseCSVData(lastSession.content, lastSession.filename, false); // false = don't save again
+
+                // Add visual cue
+                const status = document.querySelector('.file-status');
+                status.innerHTML += ' <span style="font-size:10px; color:#999;">(自动恢复)</span>';
+                hideFileInput();
+                return;
+            }
+
+            // Priority 2: Auto-detect local files
             const csvFiles = [
                 'B3U7 ART P113.csv',
                 'words.csv',
@@ -821,7 +890,7 @@
             showExampleData();
         }
 
-        function parseCSVData(text, filename) {
+        function parseCSVData(text, filename, save = true) {
             allWordData = text.split('\n').map(line => {
                 const parts = line.split(',');
                 return parts.length >= 2 ? {
@@ -831,6 +900,8 @@
             }).filter(word => word && word.english && word.chinese);
 
             if (allWordData.length > 0) {
+                if (save) DataPersistence.save(filename, text);
+
                 document.querySelector('.file-status').textContent = `已加载: ${filename} (${allWordData.length}个单词)`;
                 document.querySelector('.file-status').style.color = '#28a745';
 
