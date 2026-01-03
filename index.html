@@ -854,7 +854,8 @@
     <button class="theme-toggle" onclick="toggleTheme()" title="切换日间/夜间模式">🌓</button>
 
     <!-- Library Toggle Button -->
-    <button class="library-toggle" onclick="toggleLibrary()" title="打开词库列表">📚</button>
+    <button class="library-toggle" id="libraryToggleBtn" onclick="toggleLibrary()" title="登录后查看词库列表"
+        disabled>📚</button>
 
     <!-- Library Drawer -->
     <div class="library-drawer" id="libraryDrawer">
@@ -1235,6 +1236,7 @@
             const fileInput = document.getElementById('fileInput');
             const fileSelectBtn = document.getElementById('fileSelectBtn');
             const fileStatus = document.getElementById('fileStatus');
+            const libraryToggleBtn = document.getElementById('libraryToggleBtn');
 
             if (currentUser) {
                 document.getElementById('userEmail').innerText = currentUser.email;
@@ -1253,6 +1255,12 @@
                 if (fileSelectBtn) fileSelectBtn.disabled = false;
                 if (fileStatus) fileStatus.innerText = '👆 请选择CSV词库文件,或使用示例数据';
 
+                // Enable library toggle
+                if (libraryToggleBtn) {
+                    libraryToggleBtn.disabled = false;
+                    libraryToggleBtn.title = '打开词库列表';
+                }
+
                 // Load cloud data
                 CloudPersistence.load();
             } else {
@@ -1264,6 +1272,12 @@
                 if (fileInput) fileInput.disabled = true;
                 if (fileSelectBtn) fileSelectBtn.disabled = true;
                 if (fileStatus) fileStatus.innerText = '⚠️ 请先登录后才能导入词库';
+
+                // Disable library toggle
+                if (libraryToggleBtn) {
+                    libraryToggleBtn.disabled = true;
+                    libraryToggleBtn.title = '登录后查看词库列表';
+                }
                 autoLoadCSV(); // Fallback to local
             }
         }
