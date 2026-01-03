@@ -664,7 +664,14 @@
         </ul>
     </div>
 
-    <div class="header">英语单词拼写检测</div>
+    <div class="header">
+        英语单词拼写检测
+        <div style="font-size: 10px; color: #999; font-weight: normal; margin-top: 5px;">
+            v1.1.0 (Live Update)
+            <span style="cursor:pointer; text-decoration:underline; margin-left:10px;" onclick="hardReset()">🔄
+                强制刷新数据</span>
+        </div>
+    </div>
 
     <div class="control-bar">
         <div class="mode-bar">
@@ -741,7 +748,7 @@
         // --- Supabase Configuration ---
         // FILL THESE WITH YOUR PROJECT CREDENTIALS
         const SUPABASE_URL = 'https://xszyxoipwpfhiulbmgwk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzenlob2lwd3BmaGl1bGJtZ3drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU3OTU5NzEsImV4cCI6MjA1MTM3MTk3MX0.pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J-LbVrBXQWBVo';
+        const SUPABASE_ANON_KEY = 'sb_publishable_pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J';
 
         let supabase = null;
         let currentUser = null;
@@ -1384,7 +1391,7 @@
         // 页面加载时自动尝试加载同目录下的CSV文件
         async function autoLoadCSV() {
             console.log("正在尝试自动加载数据...");
-            
+
             const lastFilename = localStorage.getItem('last_csv_filename');
             const savedPage = DataPersistence.loadPage();
             let loaded = false;
@@ -1400,7 +1407,7 @@
                         if (text && text.trim().length > 0) {
                             console.log('从服务器刷新文件成功:', lastFilename);
                             parseCSVData(text, lastFilename, true); // Update cache with new content
-                            
+
                             const status = document.querySelector('.file-status');
                             status.innerHTML = `已加载: ${lastFilename} <span style="font-size:10px; color:#999;">(已更新)</span>`;
                             status.style.color = '#28a745';
@@ -1437,8 +1444,8 @@
 
             // Priority 3: Auto-detect local files (Default list)
             const csvFiles = [
-                'anki_words.csv',
                 'B3U7 ART P113.csv',
+                'anki_words.csv',
                 'words.csv',
                 'vocabulary.csv',
                 'data.csv'
@@ -1595,6 +1602,12 @@
                 }
             };
             reader.readAsText(file);
+        }
+        function hardReset() {
+            if (confirm('确定要清除所有缓存并强制刷新吗？\n这将清除本地的学习进度。')) {
+                localStorage.clear();
+                window.location.reload(true);
+            }
         }
     </script>
 
