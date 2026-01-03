@@ -963,6 +963,9 @@
             const userSection = document.getElementById('userSection');
             const loginBtn = document.getElementById('loginBtn');
             const adminPanelBtn = document.getElementById('adminPanelBtn');
+            const fileInput = document.getElementById('fileInput');
+            const fileSelectBtn = document.getElementById('fileSelectBtn');
+            const fileStatus = document.getElementById('fileStatus');
 
             if (currentUser) {
                 document.getElementById('userEmail').innerText = currentUser.email;
@@ -974,12 +977,22 @@
                     adminPanelBtn.style.display = 'inline-block';
                 }
 
+                // Enable file selection for logged-in users
+                if (fileInput) fileInput.disabled = false;
+                if (fileSelectBtn) fileSelectBtn.disabled = false;
+                if (fileStatus) fileStatus.innerText = '👆 请选择CSV词库文件,或使用示例数据';
+
                 // Load cloud data
                 CloudPersistence.load();
             } else {
                 userSection.style.display = 'none';
                 loginBtn.style.display = 'block';
                 if (adminPanelBtn) adminPanelBtn.style.display = 'none';
+
+                // Disable file selection for non-logged-in users
+                if (fileInput) fileInput.disabled = true;
+                if (fileSelectBtn) fileSelectBtn.disabled = true;
+                if (fileStatus) fileStatus.innerText = '⚠️ 请先登录后才能导入词库';
                 autoLoadCSV(); // Fallback to local
             }
         }
