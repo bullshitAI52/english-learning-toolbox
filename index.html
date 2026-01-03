@@ -580,6 +580,63 @@
             font-size: 20px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ... existing styles ... */
+
+        /* Auth Modal Specifics */
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .auth-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .auth-error {
+            color: #dc3545;
+            font-size: 13px;
+            display: none;
+            /* hidden by default */
+            margin-top: -10px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 5px 10px;
+            min-height: 30px;
+            min-width: auto;
+        }
+
+        .btn-logout:hover {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+    </style>
 </head>
 
 <body>
@@ -628,6 +685,13 @@
         <button id="timerBtn" class="btn btn-secondary">⏱️ 开始计时</button>
         <span id="elapsedTimeDisplay">已用时间: 0 秒</span>
         <button id="screenshotBtn" class="btn btn-secondary">📷 截图保存</button>
+        <!-- User Profile Section -->
+        <div id="userSection" class="user-profile" style="display:none; margin-left:auto;">
+            <span id="userEmail"></span>
+            <button class="btn-logout" onclick="signOut()">退出</button>
+        </div>
+        <button id="loginBtn" class="btn btn-primary" style="margin-left:auto;" onclick="openAuthModal()">👤
+            登录云端</button>
     </div>
 
     <div class="container">
@@ -637,6 +701,26 @@
 
     <div class="fullscreen-spell" id="spellContainer">
         <button class="close-spell" onclick="closeSpelling()">×</button>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card">
+            <div class="modal-title" id="authTitle">登录 / 注册</div>
+            <div class="auth-container">
+                <input type="email" id="authEmail" class="auth-input" placeholder="邮箱地址 (Email)">
+                <input type="password" id="authPassword" class="auth-input" placeholder="密码 (Password - min 6 chars)">
+                <div class="auth-error" id="authError"></div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeAuthModal()">取消</button>
+                    <button class="btn btn-primary" onclick="handleAuthAction()" id="authActionBtn">登录 / 注册</button>
+                </div>
+            </div>
+            <div style="margin-top:15px; font-size:12px; color:var(--text-secondary); cursor:pointer;"
+                onclick="toggleAuthMode()">
+                <span id="authSwitchText">没有账号？点击注册</span>
+            </div>
+        </div>
     </div>
 
     <!-- Resume Modal -->
@@ -654,6 +738,18 @@
     </div>
 
     <script>
+        // --- Supabase Configuration ---
+        // FILL THESE WITH YOUR PROJECT CREDENTIALS
+        const SUPABASE_URL = 'https://xszyxoipwpfhiulbmgwk.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_pbVU-XKPlRkZUhKXcGsJ-g_fuYbFL_J';
+
+        let supabase = null;
+        let currentUser = null;
+
+        if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
         let allWordData = []; // Store complete dataset
         let displayData = []; // Store filtered data for display
         let currentPage = 1;
@@ -662,6 +758,114 @@
         let currentMode = 'all'; // 'all', 'new', 'mistake'
         const WORDS_PER_PAGE = 3;
         const youdaoAPI = 'https://dict.youdao.com/dictvoice?audio=';
+
+        // --- Auth Functions ---
+        let isLoginMode = true;
+
+        function openAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+            resetAuthUI();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            resetAuthUI();
+        }
+
+        function resetAuthUI() {
+            document.getElementById('authTitle').innerText = isLoginMode ? '登录云端' : '注册新账号';
+            document.getElementById('authActionBtn').innerText = isLoginMode ? '立即登录' : '立即注册';
+            document.getElementById('authSwitchText').innerText = isLoginMode ? '没有账号？点击注册' : '已有账号？点击登录';
+            document.getElementById('authError').style.display = 'none';
+        }
+
+        async function handleAuthAction() {
+            if (!supabase) {
+                alert('请先配置 Supabase URL 和 Key！\nPlease configure Supabase API keys in the code.');
+                return;
+            }
+
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const errorEl = document.getElementById('authError');
+
+            errorEl.style.display = 'none';
+
+            if (!email || !password || password.length < 6) {
+                errorEl.innerText = '请输入有效的邮箱和密码（密码至少6位）';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            let result;
+            try {
+                if (isLoginMode) {
+                    result = await supabase.auth.signInWithPassword({ email, password });
+                } else {
+                    result = await supabase.auth.signUp({ email, password });
+                }
+
+                if (result.error) throw result.error;
+
+                if (!isLoginMode && result.data.user && !result.data.session) {
+                    alert('注册成功！请去邮箱确认验证邮件即可登录。');
+                } else {
+                    closeAuthModal();
+                    // Auth state change will handle the rest
+                }
+
+            } catch (err) {
+                errorEl.innerText = err.message;
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function signOut() {
+            if (supabase) await supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        // Auth Listener
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Theme Init
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            if (supabase) {
+                const { data: { session } } = await supabase.auth.getSession();
+                updateUserSession(session);
+
+                supabase.auth.onAuthStateChange((_event, session) => {
+                    updateUserSession(session);
+                });
+            } else {
+                console.warn("Supabase not configured.");
+                autoLoadCSV();
+            }
+        });
+
+        function updateUserSession(session) {
+            currentUser = session ? session.user : null;
+            const userSection = document.getElementById('userSection');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (currentUser) {
+                document.getElementById('userEmail').innerText = currentUser.email;
+                userSection.style.display = 'flex';
+                loginBtn.style.display = 'none';
+                // Load cloud data
+                CloudPersistence.load();
+            } else {
+                userSection.style.display = 'none';
+                loginBtn.style.display = 'block';
+                autoLoadCSV(); // Fallback to local
+            }
+        }
+
 
         // Base64 Simple Ding Sound
         const correctSoundBase64 = "data:audio/wav;base64,UklGRl9vTNEAAXdvYmtuPgPNEDYAAA..."; // Placeholder for short ding, let's use a real short base64 or a free url? 
@@ -690,11 +894,47 @@
         }
 
         // --- Persistence Manager ---
+        const CloudPersistence = {
+            async saveProgress(filename, content, page) {
+                if (!currentUser || !supabase) return;
+
+                const { error } = await supabase
+                    .from('user_progress')
+                    .upsert({ user_id: currentUser.id, last_file: filename, last_content: content, last_page: page }, { onConflict: 'user_id' });
+
+                if (error) console.error('Cloud save failed:', error);
+            },
+
+            async load() {
+                if (!currentUser || !supabase) return;
+
+                const { data, error } = await supabase
+                    .from('user_progress')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (data) {
+                    // Update local state to match cloud
+                    localStorage.setItem('last_csv_filename', data.last_file);
+                    localStorage.setItem('last_csv_content', data.last_content);
+                    localStorage.setItem('last_page', data.last_page);
+
+                    // Trigger load
+                    autoLoadCSV();
+                } else if (!error) {
+                    // No cloud data, maybe first sync?
+                    autoLoadCSV();
+                }
+            }
+        };
+
         const DataPersistence = {
             save(filename, content) {
                 try {
                     localStorage.setItem('last_csv_filename', filename);
                     localStorage.setItem('last_csv_content', content);
+                    if (currentUser) CloudPersistence.saveProgress(filename, content, currentPage);
                 } catch (e) { console.error('Storage full?', e); }
             },
 
@@ -709,6 +949,10 @@
 
             savePage(page) {
                 localStorage.setItem('last_page', page);
+                if (currentUser) {
+                    const { filename, content } = this.load() || {};
+                    if (filename) CloudPersistence.saveProgress(filename, content, page);
+                }
             },
 
             loadPage() {
@@ -721,15 +965,51 @@
             storageKey: 'word_spelling_stats',
             data: {},
 
-            init() {
+            async init() {
+                // Try load local first
                 const stored = localStorage.getItem(this.storageKey);
                 if (stored) {
                     this.data = JSON.parse(stored);
                 }
+
+                // If logged in, sync with cloud
+                if (currentUser && supabase) {
+                    const { data } = await supabase
+                        .from('user_stats')
+                        .select('word, correct, wrong, last_practiced')
+                        .eq('user_id', currentUser.id);
+
+                    if (data) {
+                        data.forEach(row => {
+                            this.data[row.word] = {
+                                correct: row.correct,
+                                wrong: row.wrong,
+                                lastPracticed: row.last_practiced
+                            };
+                        });
+                        this.saveFunc(); // Update local storage with connection result
+                    }
+                }
             },
 
-            save() {
+            saveFunc() {
                 localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+            },
+
+            async save(word, stat) {
+                this.saveFunc();
+
+                if (currentUser && supabase && word) {
+                    await supabase
+                        .from('user_stats')
+                        .upsert({
+                            user_id: currentUser.id,
+                            word: word,
+                            correct: stat.correct,
+                            wrong: stat.wrong,
+                            last_practiced: stat.lastPracticed
+                        }, { onConflict: 'user_id, word' });
+                }
             },
 
             get(word) {
@@ -744,10 +1024,11 @@
                 if (isCorrect) stat.correct++;
                 else stat.wrong++;
                 stat.lastPracticed = Date.now();
-                this.save();
+                this.save(word, stat);
             }
         };
 
+        // Initialize Stats (will be re-called on auth change if needed, but for now simple init)
         WordStats.init();
 
         function switchMode(mode) {
