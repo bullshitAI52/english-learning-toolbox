@@ -1973,35 +1973,29 @@
                 }
             }
 
-            if (loaded) return;
-
-            // Priority 3: Auto-detect local files (Default list)
-            const csvFiles = [
+            // Auto-load disabled - users should manually select CSV file
+            // If you want to auto-load a default CSV, uncomment below:
+            /*
+            const defaultFiles = [
                 'B3U7 ART P113.csv',
-                'anki_words.csv',
-                'words.csv',
-                'vocabulary.csv',
-                'data.csv'
+                'anki_words.csv'
             ];
 
-            for (let filename of csvFiles) {
+            for (const filename of defaultFiles) {
                 try {
-                    const response = await fetch(encodeURIComponent(filename));
+                    const response = await fetch(filename);
                     if (response.ok) {
                         const text = await response.text();
-                        if (text.trim()) {
-                            console.log(`成功加载默认文件: ${filename}`);
-                            parseCSVData(text, filename);
-                            return;
-                        }
+                        parseCSVData(text, filename);
+                        return;
                     }
                 } catch (error) {
-                    console.log(`尝试加载 ${filename} 失败:`, error);
+                    console.log(`Failed to load ${filename}`);
                 }
             }
+            */
 
-            // 如果没有找到CSV文件，显示示例数据
-            console.log('未找到CSV文件，显示示例数据');
+            // Show example data if no file loaded
             showExampleData();
         }
 
