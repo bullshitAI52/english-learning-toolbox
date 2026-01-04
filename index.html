@@ -889,8 +889,10 @@
             <button class="mode-btn" onclick="switchMode('new')">🆕 未背诵</button>
             <button class="mode-btn" onclick="switchMode('mistake')">❌ 易错题</button>
             <button class="mode-btn" onclick="switchMode('mastered')">✅ 已背熟</button>
+            <button class="btn btn-secondary" onclick="resetAllMastered()"
+                style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">🔄 重置已背熟</button>
             <button class="btn btn-secondary" onclick="openHelpModal()"
-                style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
+                style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
         </div>
 
         <div class="time-display" id="currentTime"></div>
@@ -1548,15 +1550,34 @@
         // Initialize Stats (will be re-called on auth change if needed, but for now simple init)
         WordStats.init();
 
-        // Reset word statistics
-        function resetWordStats(word) {
-            if (confirm(`确定要重置 "${word}" 的学习记录吗？`)) {
-                WordStats.data[word] = { correct: 0, wrong: 0, lastPracticed: 0 };
-                WordStats.save(word, WordStats.data[word]);
-                // Re-render current page
+        // Reset all mastered words
+        function resetAllMastered() {
+            const masteredCount = allWordData.filter(w => {
+                const stats = WordStats.get(w.english);
+                return stats.correct >= 3 && stats.wrong === 0;
+            }).length;
+
+            if (masteredCount === 0) {
+                alert('没有已背熟的单词哦！');
+                return;
+            }
+
+            if (confirm(`确定要重置所有已背熟的单词吗？\n\n将清空 ${masteredCount} 个单词的学习记录！`)) {
+                let resetCount = 0;
+                allWordData.forEach(w => {
+                    const stats = WordStats.get(w.english);
+                    if (stats.correct >= 3 && stats.wrong === 0) {
+                        WordStats.data[w.english] = { correct: 0, wrong: 0, lastPracticed: 0 };
+                        WordStats.save(w.english, WordStats.data[w.english]);
+                        resetCount++;
+                    }
+                });
+
+                // Refresh display
                 filterData();
-                renderPage(currentPage);
-                alert('✅ 已重置！');
+                renderPage(1);
+                renderPagination();
+                alert(`✅ 已重置 ${resetCount} 个单词！`);
             }
         }
 
@@ -1682,7 +1703,6 @@
                         <span class="stat-badge correct">✓ ${stats.correct}</span>
                         <span class="stat-badge wrong">✗ ${stats.wrong}</span>
                         ${stats.correct >= 3 && stats.wrong === 0 ? '<span class="stat-badge" style="background:#d4edda; color:#155724;">✅ 已背熟</span>' : ''}
-                        <button class="btn btn-secondary" onclick="resetWordStats('${word.english}')" style="font-size:11px; padding:4px 8px; margin-left:5px;">🔄 重置</button>
                     </div>
                     <div class="input-container">
                         <input type="text" class="input-box" 
