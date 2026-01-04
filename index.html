@@ -888,6 +888,7 @@
             <button class="mode-btn active" onclick="switchMode('all')">📚 全部练习</button>
             <button class="mode-btn" onclick="switchMode('new')">🆕 未背诵</button>
             <button class="mode-btn" onclick="switchMode('mistake')">❌ 易错题</button>
+            <button class="mode-btn" onclick="switchMode('mastered')">✅ 已背熟</button>
             <button class="btn btn-secondary" onclick="openHelpModal()"
                 style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
         </div>
@@ -1547,6 +1548,18 @@
         // Initialize Stats (will be re-called on auth change if needed, but for now simple init)
         WordStats.init();
 
+        // Reset word statistics
+        function resetWordStats(word) {
+            if (confirm(`确定要重置 "${word}" 的学习记录吗？`)) {
+                WordStats.data[word] = { correct: 0, wrong: 0, lastPracticed: 0 };
+                WordStats.save(word, WordStats.data[word]);
+                // Re-render current page
+                filterData();
+                renderPage(currentPage);
+                alert('✅ 已重置！');
+            }
+        }
+
         function switchMode(mode) {
             currentMode = mode;
 
@@ -1561,15 +1574,24 @@
         }
 
         function filterData() {
+            // Helper function to check if word is mastered
+            const isMastered = (word) => {
+                const stats = WordStats.get(word.english);
+                return stats.correct >= 3 && stats.wrong === 0;
+            };
+
             if (currentMode === 'all') {
-                displayData = [...allWordData];
+                // Exclude mastered words from all mode
+                displayData = allWordData.filter(w => !isMastered(w));
             } else if (currentMode === 'new') {
                 displayData = allWordData.filter(w => {
+                    if (isMastered(w)) return false; // Exclude mastered
                     const stats = WordStats.get(w.english);
                     return stats.correct === 0 && stats.wrong === 0;
                 });
             } else if (currentMode === 'mistake') {
                 displayData = allWordData.filter(w => {
+                    if (isMastered(w)) return false; // Exclude mastered
                     const stats = WordStats.get(w.english);
                     return stats.wrong > 0 && (stats.wrong > stats.correct); // Only showing words where errors exceed correct answers, or just any error? User said "易错题". Let's simply show any that have errors > 0 for now, sorted by error count.
                 }).sort((a, b) => {
@@ -1577,6 +1599,9 @@
                     const statsB = WordStats.get(b.english);
                     return statsB.wrong - statsA.wrong; // Descending order of mistakes
                 });
+            } else if (currentMode === 'mastered') {
+                // Show only mastered words
+                displayData = allWordData.filter(w => isMastered(w));
             }
 
             // If mistake/new mode is empty, show alert or fallback? 
@@ -1654,9 +1679,10 @@
                 <div class="word-item">
                     <div class="chinese-text">${word.chinese}</div>
                     <div class="word-stats">
-                        历史记录: 
-                        <span class="stat-badge correct">✅ ${stats.correct}</span>
-                        <span class="stat-badge wrong">❌ ${stats.wrong}</span>
+                        <span class="stat-badge correct">✓ ${stats.correct}</span>
+                        <span class="stat-badge wrong">✗ ${stats.wrong}</span>
+                        ${stats.correct >= 3 && stats.wrong === 0 ? '<span class="stat-badge" style="background:#d4edda; color:#155724;">✅ 已背熟</span>' : ''}
+                        <button class="btn btn-secondary" onclick="resetWordStats('${word.english}')" style="font-size:11px; padding:4px 8px; margin-left:5px;">🔄 重置</button>
                     </div>
                     <div class="input-container">
                         <input type="text" class="input-box" 
