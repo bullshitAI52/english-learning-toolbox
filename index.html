@@ -1973,9 +1973,9 @@
                 }
             }
 
-            // Auto-load disabled - users should manually select CSV file
-            // If you want to auto-load a default CSV, uncomment below:
-            /*
+            if (loaded) return;
+
+            // Auto-load B3U7 ART P113.csv by default
             const defaultFiles = [
                 'B3U7 ART P113.csv',
                 'anki_words.csv'
@@ -1986,16 +1986,18 @@
                     const response = await fetch(filename);
                     if (response.ok) {
                         const text = await response.text();
-                        parseCSVData(text, filename);
-                        return;
+                        if (text.trim()) {
+                            console.log(`Successfully loaded: ${filename}`);
+                            parseCSVData(text, filename);
+                            return;
+                        }
                     }
                 } catch (error) {
-                    console.log(`Failed to load ${filename}`);
+                    console.log(`Failed to load ${filename}:`, error);
                 }
             }
-            */
 
-            // Show example data if no file loaded
+            // Show example data if no CSV file found
             showExampleData();
         }
 
