@@ -1602,8 +1602,8 @@
             };
 
             if (currentMode === 'all') {
-                // Exclude mastered words from all mode
-                displayData = allWordData.filter(w => !isMastered(w));
+                // Show ALL words (including mastered)
+                displayData = [...allWordData];
             } else if (currentMode === 'new') {
                 displayData = allWordData.filter(w => {
                     if (isMastered(w)) return false; // Exclude mastered
