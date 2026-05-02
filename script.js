@@ -131,7 +131,8 @@
         let currentPage = 1;
         let startTime;
         let spellTimeout;
-        let currentMode = 'all'; // 'all', 'new', 'mistake'
+        let currentMode = 'all'; // 'all', 'new', 'mistake', 'mastered', 'review'
+        let reviewWordList = [];
         const WORDS_PER_PAGE = 10;
         const youdaoAPI = 'https://dict.youdao.com/dictvoice?audio=';
 
@@ -446,7 +447,7 @@
                 } else {
                     container.innerHTML = files.map(function(f) {
                         var safeName = f.name.replace(/'/g, "\\'");
-                        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:5px;"><span>' + f.name + '</span><button class="btn btn-secondary" style="background:#dc3545; color:#fff; padding:4px 10px; font-size:12px; min-height:auto;" onclick="deleteSharedWordlist(\'' + safeName + '\')">删除</button></div>';
+                   return '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; margin-bottom:5px;"><span>' + f.name + '</span><button class="btn btn-secondary" style="background:#dc3545; color:#fff; padding:4px 10px; font-size:12px; min-height:auto;" onclick="deleteSharedWordlist(\'' + safeName + '\')">删除</button></div>';
                     }).join('');
                 }
             } catch(e) {
@@ -818,12 +819,20 @@
             }
         }
 
-        function switchMode(mode) {
+        async function switchMode(mode) {
             currentMode = mode;
 
-            // Update UI
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active'); // Note: this relies on event bubbling/binding
+            document.querySelectorAll('.mode-btn').forEach(function(btn) { btn.classList.remove('active'); });
+            if (event.target) event.target.classList.add('active');
+
+            if (mode === 'review') {
+                try {
+                    var resp = await API.request('/stats/review');
+                    reviewWordList = (resp.words || []).map(function(w) { return w.word; });
+                } catch(e) {
+                    reviewWordList = [];
+                }
+            }
 
             filterData();
             currentPage = 1;
@@ -1378,7 +1387,8 @@
             if (sharedWordlistNames.length > 0) {
                 html += '<li style="padding:8px 12px; font-size:12px; color:var(--text-secondary); border-bottom:1px solid var(--border-color);">共享词库</li>';
                 html += sharedWordlistNames.map(function(name) {
-                    return '<li class="library-item" onclick="loadSharedWordlist('' + name.replace(/'/g, "\\'") + '')">' + name + '</li>';
+                    var safeName = name.replace(/'/g, "\\'");
+                    return '<li class="library-item" onclick="loadSharedWordlist(\'' + safeName + '\')">' + name + '</li>';
                 }).join('');
             }
             list.innerHTML = html;

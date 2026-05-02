@@ -26,7 +26,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       word TEXT NOT NULL,
-      correct INTEGER DEFAULT 0,
+      correct INTEGER DEFAULT 0, ef REAL DEFAULT 2.5, interval_days INTEGER DEFAULT 0, repetitions INTEGER DEFAULT 0, next_review INTEGER DEFAULT 0,
       wrong INTEGER DEFAULT 0,
       last_practiced INTEGER,
       UNIQUE(user_id, word),
