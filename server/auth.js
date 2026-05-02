@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('./db');
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-this';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -115,6 +115,48 @@ router.get('/me', authenticateToken, (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         res.json({ user });
+    });
+});
+
+// Forgot password - generate reset code
+router.post('/forgot-password', (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    db.get('SELECT id FROM users WHERE email = ?', [email], (err, user) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!user) return res.json({ message: '如果该邮箱已注册，重置码已生成', code_generated: true });
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = Date.now() + 3600000;
+
+        db.run('INSERT INTO password_resets (user_id, code, expires_at) VALUES (?, ?, ?)',
+            [user.id, code, expiresAt], (err2) => {
+                if (err2) return res.status(500).json({ error: 'Database error' });
+                res.json({ message: '重置码已生成，请联系管理员获取验证码', code_generated: true });
+            });
+    });
+});
+
+// Reset password with code
+router.post('/reset-password', async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword || newPassword.length < 6) {
+        return res.status(400).json({ error: 'Email, reset code, and new password (min 6 chars) required' });
+    }
+
+    db.get('SELECT id FROM users WHERE email = ?', [email], (err, user) => {
+        if (err || !user) return res.status(400).json({ error: 'Invalid email' });
+
+        db.get('SELECT * FROM password_resets WHERE user_id = ? AND code = ? AND used = 0 AND expires_at > ? ORDER BY id DESC LIMIT 1',
+            [user.id, code, Date.now()], async (err2, reset) => {
+                if (err2 || !reset) return res.status(400).json({ error: '无效或已过期的重置码' });
+
+                const passwordHash = await bcrypt.hash(newPassword, 10);
+                db.run('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, user.id]);
+                db.run('UPDATE password_resets SET used = 1 WHERE id = ?', [reset.id]);
+                res.json({ message: '密码重置成功！请使用新密码登录' });
+            });
     });
 });
 

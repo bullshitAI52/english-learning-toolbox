@@ -81,4 +81,22 @@ router.post('/stats', authenticateToken, (req, res) => {
     );
 });
 
+// Record daily practice
+router.post("/stats/daily", authenticateToken, (req, res) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const { words_practiced, correct_count, wrong_count } = req.body;
+    db.run("INSERT INTO daily_practice (user_id, date, words_practiced, correct_count, wrong_count) VALUES (?, ?, ?, ?, ?) ON CONFLICT(user_id, date) DO UPDATE SET words_practiced = words_practiced + excluded.words_practiced, correct_count = correct_count + excluded.correct_count, wrong_count = wrong_count + excluded.wrong_count",
+        [req.user.id, today, words_practiced || 0, correct_count || 0, wrong_count || 0],
+        (err) => { if (err) return res.status(500).json({ error: "Database error" }); res.json({ message: "Saved" }); });
+});
+
+// Get daily stats for last 30 days
+router.get("/stats/daily", authenticateToken, (req, res) => {
+    db.all("SELECT date, words_practiced, correct_count, wrong_count FROM daily_practice WHERE user_id = ? AND date >= date(now, -30 days) ORDER BY date ASC",
+        [req.user.id], (err, rows) => {
+            if (err) return res.status(500).json({ error: "Database error" });
+            res.json({ daily: rows || [] });
+        });
+});
+
 module.exports = router;

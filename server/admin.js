@@ -62,4 +62,17 @@ router.post('/admin/reject-user', authenticateToken, (req, res) => {
     });
 });
 
+// Admin: Get pending password reset codes
+router.get('/admin/reset-codes', authenticateToken, (req, res) => {
+    db.get('SELECT is_admin FROM users WHERE id = ?', [req.user.id], (err, user) => {
+        if (err || !user || !user.is_admin) return res.status(403).json({ error: 'Unauthorized' });
+
+        db.all('SELECT r.id, r.code, r.expires_at, r.used, r.created_at, u.email FROM password_resets r JOIN users u ON r.user_id = u.id WHERE r.used = 0 AND r.expires_at > ? ORDER BY r.id DESC',
+            [Date.now()], (err2, codes) => {
+                if (err2) return res.status(500).json({ error: 'Database error' });
+                res.json({ codes });
+            });
+    });
+});
+
 module.exports = router;
