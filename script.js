@@ -321,7 +321,7 @@
                 updateUserSession(currentUser);
 
                 if (!isLoginMode) {
-                    showToast('注册成功！', 'success');
+                    showToast('注册成功！请等待管理员审核。', 'success');
                 }
 
             } catch (err) {
@@ -422,6 +422,7 @@
 
         // --- Admin Panel Functions ---
         function openAdminPanel() {
+            loadPendingUsers();
             document.getElementById('adminModal').style.display = 'flex';
             loadSharedForAdmin();
         }
@@ -480,6 +481,66 @@
         function closeAdminPanel() {
             document.getElementById('adminModal').style.display = 'none';
         }
+
+// === Admin User Approval ===
+async function loadPendingUsers() {
+    var container = document.getElementById('pendingUsersList');
+    if (!container) return;
+    container.innerHTML = '<p style="text-align:center; color:#666;">加载中...</p>';
+    try {
+        var result = await API.request('/collections/users/records?perPage=500&sort=-created');
+        var users = result.items || [];
+        var pending = users.filter(function(u) { return !u.verified; });
+        var approved = users.filter(function(u) { return u.verified; });
+
+        var html = '';
+        if (pending.length === 0) {
+            html += '<p style="text-align:center; color:#28a745;">没有待审核用户</p>';
+        } else {
+            html += '<strong style="font-size:13px;">待审核 (' + pending.length + '人)</strong>';
+            pending.forEach(function(u) {
+                html += '<div style="border:1px solid var(--border-color); padding:10px; margin:8px 0; border-radius:6px; background:var(--card-bg);">';
+                html += '<div style="margin-bottom:8px;"><strong>' + u.email + '</strong><br><span style="font-size:11px; color:#999;">' + new Date(u.created).toLocaleString('zh-CN') + '</span></div>';
+                html += '<button class="btn btn-primary" onclick="approveUser(\'' + u.id + '\')" style="background:#28a745; font-size:11px; padding:4px 12px; margin-right:6px;">批准</button>';
+                html += '<button class="btn btn-secondary" onclick="rejectUser(\'' + u.id + '\')" style="font-size:11px; padding:4px 12px;">删除</button>';
+                html += '</div>';
+            });
+        }
+        if (approved.length > 0) {
+            html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:13px; color:var(--text-secondary);">已批准用户 (' + approved.length + '人)</summary>';
+            approved.forEach(function(u) {
+                html += '<div style="padding:4px 8px; font-size:12px; color:var(--text-secondary);">' + u.email + ' <span style="color:#28a745;">✓</span></div>';
+            });
+            html += '</details>';
+        }
+        container.innerHTML = html;
+    } catch(e) {
+        container.innerHTML = '<p style="text-align:center; color:#dc3545;">加载失败: ' + e.message + '</p>';
+    }
+}
+
+async function approveUser(userId) {
+    if (!(await showConfirm('确定批准该用户？批准后用户可以正常登录。', '批准', '取消', false))) return;
+    try {
+        await API.request('/collections/users/records/' + userId, {
+            method: 'PATCH',
+            body: JSON.stringify({ verified: true })
+        });
+        showToast('已批准！', 'success');
+        loadPendingUsers();
+    } catch(e) { showToast('操作失败: ' + e.message, 'error'); }
+}
+
+async function rejectUser(userId) {
+    if (!(await showConfirm('确定删除该用户？此操作不可恢复。', '删除', '取消', true))) return;
+    try {
+        await API.request('/collections/users/records/' + userId, { method: 'DELETE' });
+        showToast('已删除！', 'success');
+        loadPendingUsers();
+    } catch(e) { showToast('操作失败: ' + e.message, 'error'); }
+}
+
+        loadPendingUsers();
 
         // --- Toast & Confirm Utilities ---
         function showToast(msg, type) {

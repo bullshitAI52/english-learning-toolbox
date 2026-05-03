@@ -92,7 +92,7 @@
                 <span id="authSwitchText">没有账号？点击注册</span>
             </div>
             <div style="margin-top:8px; text-align:center;">
-                <span id="forgotPwdLink" style="font-size:12px; color:var(--primary-color); cursor:pointer;" onclick="showForgotPassword()">忘记密码？</span>
+                <span id="forgotPwdLink" style="font-size:12px; color:var(--primary-color); cursor:pointer;" onclick="showForgotPassword()">忘记密码？｜修改密码</span>
             </div>
         </div>
     </div>
@@ -128,10 +128,10 @@
     <div class="modal-overlay" id="adminModal">
         <div class="modal-card" style="width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto;">
             <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>👑 管理面板</span>
+                <span>👑 管理面板 - 用户审核</span>
                 <span onclick="closeAdminPanel()" style="cursor:pointer; font-size:24px; color:var(--text-secondary);">&times;</span>
             </div>
-            <div style="padding-top:10px;">
+            <div style="padding-top:10px;" id="pendingUsersSection"><div class="modal-title" style="font-size:16px;">👥 待审核用户</div><div id="pendingUsersList" style="max-height:250px; overflow-y:auto; margin:15px 0;"><p style="text-align:center; color:#666;">点击刷新查看</p></div><div style="text-align:center; margin-bottom:15px;"><button class="btn btn-secondary" onclick="loadPendingUsers()">🔄 刷新用户列表</button></div></div><div style="padding-top:10px;">
                 <div class="modal-title" style="font-size:16px;">📚 共享词库管理</div>
                 <div id="sharedWordlistList" style="max-height:300px; overflow-y:auto; margin:15px 0;">
                     <p style="text-align:center; color:#666;">点击打开查看</p>
