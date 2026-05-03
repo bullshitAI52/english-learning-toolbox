@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,27 +7,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle" onclick="toggleTheme()" title="切换日间/夜间模式">🌓</button>
+    <button class="library-toggle" id="libraryToggleBtn" onclick="toggleLibrary()" title="登录后查看词库列表" disabled>📚</button>
 
-    <!-- Library Toggle Button -->
-    <button class="library-toggle" id="libraryToggleBtn" onclick="toggleLibrary()" title="登录后查看词库列表"
-        disabled>📚</button>
-
-    <!-- Library Drawer -->
     <div class="library-drawer" id="libraryDrawer">
         <div class="library-header">
             <span>我的词库</span>
             <span style="font-size:14px; cursor:pointer;" onclick="toggleLibrary()">✕</span>
         </div>
         <div style="margin-bottom:15px;">
-            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none"
-                onchange="handleFolderSelect(this)">
-            <button class="btn btn-primary" onclick="document.getElementById('folderInput').click()"
-                style="width:100%; font-size:12px;">📂 导入词库文件夹</button>
+            <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(this)">
+            <button class="btn btn-primary" onclick="document.getElementById('folderInput').click()" style="width:100%; font-size:12px;">📂 导入词库文件夹</button>
         </div>
         <ul class="library-list" id="libraryList">
             <li class="library-item" style="color:#999; text-align:center;">暂无词库<br>请点击上方按钮导入</li>
@@ -38,9 +28,8 @@
     <div class="header">
         英语单词拼写检测
         <div style="font-size: 10px; color: #999; font-weight: normal; margin-top: 5px;">
-            v1.1.0 (Live Update)
-            <span style="cursor:pointer; text-decoration:underline; margin-left:10px;" onclick="hardReset()">🔄
-                强制刷新数据</span>
+            v2.0 (PocketBase)
+            <span style="cursor:pointer; text-decoration:underline; margin-left:10px;" onclick="hardReset()">🔄 强制刷新数据</span>
         </div>
     </div>
 
@@ -51,10 +40,9 @@
             <button class="mode-btn" onclick="switchMode('mistake')">❌ 易错题</button>
             <button class="mode-btn" onclick="switchMode('mastered')">✅ 已背熟</button>
             <button class="mode-btn" onclick="switchMode('review')">🔄 待复习</button>
-            <button class="btn btn-secondary" onclick="resetAllMastered()"
-                style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">🔄 重置已背熟</button>
-            <button class="btn btn-secondary" onclick="openHelpModal()"
-                style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
+            <button class="btn btn-secondary" onclick="resetAllMastered()" style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">🔄 重置已背熟</button>
+            <button class="btn btn-secondary" onclick="openHelpModal()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
+            <button class="btn btn-secondary" onclick="showStatsDashboard()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">📊 统计</button>
         </div>
 
         <div class="time-display" id="currentTime"></div>
@@ -69,19 +57,13 @@
         <button id="timerBtn" class="btn btn-secondary">⏱️ 开始计时</button>
         <span id="elapsedTimeDisplay">已用时间: 0 秒</span>
         <button id="screenshotBtn" class="btn btn-secondary">📷 截图保存</button>
-        <!-- User Profile Section -->
+
         <div id="userSection" class="user-profile" style="display:none; margin-left:auto;">
             <span id="userEmail"></span>
-            <button id="adminPanelBtn" class="btn btn-secondary" onclick="openAdminPanel()"
-                style="display:none; font-size:12px; padding:5px 10px; position:relative;">
-                👑 管理
-                <span id="adminBadge"
-                    style="display:none; position:absolute; top:-5px; right:-5px; background:#dc3545; color:white; border-radius:10px; padding:2px 6px; font-size:10px; font-weight:bold;"></span>
-            </button>
+            <button id="adminPanelBtn" class="btn btn-secondary" onclick="openAdminPanel()" style="font-size:12px; padding:5px 10px;">👑 管理</button>
             <button class="btn-logout" onclick="signOut()">退出</button>
         </div>
-        <button id="loginBtn" class="btn btn-primary" style="margin-left:auto;" onclick="openAuthModal()">👤
-            登录云端</button>
+        <button id="loginBtn" class="btn btn-primary" style="margin-left:auto;" onclick="openAuthModal()">👤 登录云端</button>
     </div>
 
     <div class="container">
@@ -99,20 +81,18 @@
             <div class="modal-title" id="authTitle">登录 / 注册</div>
             <div class="auth-container">
                 <input type="email" id="authEmail" class="auth-input" placeholder="邮箱地址 (Email)">
-                <input type="password" id="authPassword" class="auth-input" placeholder="密码 (Password - min 6 chars)">
+                <input type="password" id="authPassword" class="auth-input" placeholder="密码 (至少8位)">
                 <div class="auth-error" id="authError"></div>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" onclick="closeAuthModal()">取消</button>
                     <button class="btn btn-primary" onclick="handleAuthAction()" id="authActionBtn">登录 / 注册</button>
                 </div>
             </div>
-            <div style="margin-top:15px; font-size:12px; color:var(--text-secondary); cursor:pointer;"
-                onclick="toggleAuthMode()">
+            <div style="margin-top:15px; font-size:12px; color:var(--text-secondary); cursor:pointer;" onclick="toggleAuthMode()">
                 <span id="authSwitchText">没有账号？点击注册</span>
             </div>
             <div style="margin-top:8px; text-align:center;">
-                <span id="forgotPwdLink" style="font-size:12px; color:var(--primary-color); cursor:pointer;"
-                    onclick="showForgotPassword()">忘记密码？</span>
+                <span id="forgotPwdLink" style="font-size:12px; color:var(--primary-color); cursor:pointer;" onclick="showForgotPassword()">忘记密码？</span>
             </div>
         </div>
     </div>
@@ -131,11 +111,8 @@
         </div>
     </div>
 
-    
-    <!-- Toast container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Confirm Dialog -->
     <div class="confirm-overlay" id="confirmOverlay">
         <div class="confirm-card">
             <div class="confirm-icon">⚠️</div>
@@ -151,86 +128,54 @@
     <div class="modal-overlay" id="adminModal">
         <div class="modal-card" style="width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto;">
             <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>👑 管理员面板 - 用户审核</span>
+                <span>👑 管理面板</span>
                 <span onclick="closeAdminPanel()" style="cursor:pointer; font-size:24px; color:var(--text-secondary);">&times;</span>
             </div>
-            <div id="pendingUsersList" style="max-height: 400px; overflow-y: auto; margin: 20px 0;">
-                <p style="text-align:center; color:#666;">加载中...</p>
-            </div>
-            <div style="text-align:center;">
-                <button class="btn btn-secondary" onclick="closeAdminPanel()">关闭</button>
-                <button class="btn btn-primary" onclick="loadPendingUsers()">🔄 刷新</button>
-            </div>
-            <div style="margin-top:25px; padding-top:20px; border-top:1px solid var(--border-color);">
+            <div style="padding-top:10px;">
                 <div class="modal-title" style="font-size:16px;">📚 共享词库管理</div>
-                <div id="sharedWordlistList" style="max-height:250px; overflow-y:auto; margin:15px 0;">
-                    <p style="text-align:center; color:#666;">打开面板查看</p>
+                <div id="sharedWordlistList" style="max-height:300px; overflow-y:auto; margin:15px 0;">
+                    <p style="text-align:center; color:#666;">点击打开查看</p>
                 </div>
                 <div style="text-align:center; margin-bottom:10px;">
                     <button class="btn btn-primary" onclick="uploadSharedWordlist()" style="background:#28a745;">📤 上传共享词库</button>
                 </div>
             </div>
-            <div style="padding-top:20px; border-top:1px solid var(--border-color);">
-                <div class="modal-title" style="font-size:16px;">🔑 密码重置码</div>
-                <div id="resetCodesList" style="max-height:300px; overflow-y:auto; margin:15px 0;">
-                    <p style="text-align:center; color:#666;">点击刷新查看</p>
-                </div>
-                <div style="text-align:center;">
-                    <button class="btn btn-secondary" onclick="loadResetCodes()">🔄 查看重置码</button>
-                </div>
-                <div style="text-align:center; margin-top:15px;">
-                    <button class="btn btn-secondary" onclick="closeAdminPanel()">关闭面板</button>
-                </div>
+            <div style="text-align:center; margin-top:15px;">
+                <button class="btn btn-secondary" onclick="closeAdminPanel()">关闭面板</button>
             </div>
         </div>
     </div>
 
-    <!-- Help/Usage Instructions Modal -->
+    <!-- Help Modal -->
     <div class="modal-overlay" id="helpModal">
         <div class="modal-card" style="width: 700px; max-width: 90%; max-height: 80vh; overflow-y: auto;">
             <div class="modal-title">📖 使用说明</div>
             <div style="padding: 20px; text-align: left; line-height: 1.8;">
-                <h3 style="margin-top: 0;">🎯 功能介绍</h3>
+                <h3>🎯 功能介绍</h3>
                 <ul>
                     <li><strong>📚 全部练习</strong>：练习词库中的所有单词</li>
                     <li><strong>🆕 未背诵</strong>：只练习从未答对过的新单词</li>
                     <li><strong>❌ 易错题</strong>：只练习答错次数 > 答对次数的单词</li>
+                    <li><strong>✅ 已背熟</strong>：查看已掌握的单词（答对3次以上）</li>
+                    <li><strong>🔄 待复习</strong>：3天未练习的单词</li>
                 </ul>
-
                 <h3>🔐 账号功能</h3>
                 <ul>
-                    <li><strong>👤 登录云端</strong>：注册/登录后，所有学习进度自动同步到服务器</li>
-                    <li><strong>导入词库</strong>：登录后才能导入自定义CSV词库文件</li>
-                    <li><strong>跨设备同步</strong>：换电脑也能继续之前的学习进度</li>
+                    <li><strong>👤 登录云端</strong>：注册/登录后，所有学习进度自动同步到云端</li>
+                    <li><strong>📁 导入词库</strong>：登录后才能导入自定义CSV词库文件</li>
+                    <li><strong>🔄 跨设备同步</strong>：换电脑/手机也能继续学习进度</li>
+                    <li><strong>🔑 忘记密码</strong>：点击登录框的"忘记密码"，输入邮箱即可收到重置邮件</li>
                 </ul>
-                <div
-                    style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 4px;">
-                    <strong>⚠️ 重要提示：</strong><br>
-                    必须先<strong>登录账号</strong>才能：<br>
-                    • 保存学习记录（正确/错误次数）<br>
-                    • 导入自定义单词表<br>
-                    • 跨设备同步进度
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 4px;">
+                    <strong>⚠️ 提示：</strong><br>
+                    必须先<strong>登录账号</strong>才能保存学习记录和导入词库。
                 </div>
-
-                <h3>⏱️ 其他功能</h3>
-                <ul>
-                    <li><strong>开始计时</strong>：记录您的练习时长</li>
-                    <li><strong>截图保存</strong>：保存当前学习进度截图，方便打卡分享</li>
-                    <li><strong>深色模式</strong>：点击右上角 🌙 切换主题</li>
-                </ul>
-
                 <h3>📁 CSV 文件格式</h3>
-                <p>词库文件需要包含以下列（用逗号分隔）：</p>
                 <code style="display: block; background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0;">
-                    单词,音标,中文,例句,句子翻译
+                    单词,中文释义<br>
+                    apple,苹果<br>
+                    computer,计算机
                 </code>
-                <p style="font-size: 12px; color: #666;">示例：apple,/ˈæpl/,苹果,I like apples,我喜欢苹果</p>
-
-                <h3>👑 管理员功能</h3>
-                <ul>
-                    <li>管理员登录后可以看到 <strong>"👑 管理"</strong> 按钮</li>
-                    <li>点击可以审核新用户的注册申请</li>
-                </ul>
             </div>
             <div style="text-align:center; padding: 10px;">
                 <button class="btn btn-primary" onclick="closeHelpModal()">知道了</button>
@@ -239,7 +184,5 @@
     </div>
 
     <script src="script.js"></script>
-
 </body>
-
 </html>
