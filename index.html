@@ -198,7 +198,18 @@
                     <button class="btn btn-primary" onclick="addPickedToDiy()">➕ 把勾选的词加入DIY词单</button>
                 </div>
                 <div id="diyWordsBox"></div>
-                <h3 style="margin: 18px 0 8px;">✍️ 背句子（自己输入，一行一句）</h3>
+                                <h3 style="margin: 18px 0 8px;">📚 我的单词库（自己加单词）</h3>
+                <div class="diy-selects">
+                    <input type="text" id="myWordEn" placeholder="英文单词，如 banana" style="flex: 1; padding: 9px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 14px;">
+                    <input type="text" id="myWordZh" placeholder="中文意思，如 香蕉" style="flex: 1; padding: 9px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 14px;">
+                    <button class="btn btn-primary" onclick="addMyWord()">➕ 添加</button>
+                </div>
+                <textarea id="myWordBulk" class="diy-sent-input" rows="3" placeholder="也可以批量粘贴，一行一个：英文,中文（或 英文|中文）&#10;apple,苹果&#10;banana,香蕉"></textarea>
+                <div style="margin: 8px 0;">
+                    <button class="btn btn-secondary" onclick="importMyWords()">📥 批量导入</button>
+                </div>
+                <div id="myWordsBox"></div>
+                <h3 style="margin: 18px 0 8px;">📚 我的句子库（自己输入，一行一句）</h3>
                 <p style="color:#888; font-size: 13px; margin: 4px 0;">格式：英文句子|中文意思（中文可省略），例如：<br>I like apples.|我喜欢苹果。</p>
                 <textarea id="diySentInput" class="diy-sent-input" rows="4" placeholder="I like apples.|我喜欢苹果。&#10;This is my school.|这是我的学校。"></textarea>
                 <div style="margin: 10px 0;">

@@ -1254,7 +1254,7 @@ async function rejectUser(userId) {
         saveSents: function(x) { try { localStorage.setItem(this.SKEY, JSON.stringify(x)); } catch (e) {} }
     };
     function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-    function openDiyModal() { initSchoolPicker(); initDiyPicker(); renderDiyWords(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
+    function openDiyModal() { initSchoolPicker(); initDiyPicker(); renderDiyWords(); renderMyWords(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
     function closeDiyModal() { document.getElementById('diyModal').style.display = 'none'; }
     var diyLastBook = null;
     function initDiyPicker() {
@@ -1479,7 +1479,63 @@ async function rejectUser(userId) {
         renderSchoolBar();
         alert('学校进度已保存：' + TEXTBOOK_BOOKS[book].title + ' · 学到 ' + TEXTBOOK_BOOKS[book].units[unit].name + '。');
     }
-            // --- Daily learning record (每日完成情况 + 错误率) ---
+    // --- My word library: user-added words ---
+    var MyWords = {
+        KEY: 'word_spelling_my_words',
+        all: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || []; } catch (e) { return []; } },
+        save: function(w) { try { localStorage.setItem(this.KEY, JSON.stringify(w)); } catch (e) {} }
+    };
+    function pushMyWord(list, en, zh) {
+        en = (en || '').trim(); zh = (zh || '').trim();
+        if (!en) return false;
+        for (var i = 0; i < list.length; i++) if (list[i].en.toLowerCase() === en.toLowerCase()) return false;
+        list.push({ en: en, zh: zh });
+        return true;
+    }
+    function addMyWord() {
+        var enEl = document.getElementById('myWordEn');
+        var zhEl = document.getElementById('myWordZh');
+        var list = MyWords.all();
+        if (!pushMyWord(list, enEl.value, zhEl.value)) { alert('没加上：英文是空的，或者这个词已经在单词库里了。'); return; }
+        MyWords.save(list);
+        enEl.value = ''; zhEl.value = '';
+        renderMyWords();
+        enEl.focus();
+    }
+    function importMyWords() {
+        var ta = document.getElementById('myWordBulk');
+        var list = MyWords.all();
+        var added = 0;
+        ta.value.split('\n').forEach(function(line) {
+        line = line.trim(); if (!line) return;
+        var parts = line.split(/[|,，\t]/);
+        if (pushMyWord(list, parts[0], parts[1] || '')) added++;
+        });
+        MyWords.save(list);
+        ta.value = '';
+        renderMyWords();
+        alert(added ? '已导入 ' + added + ' 个词，单词库现有 ' + list.length + ' 个词。' : '没有新词导入（格式不对或已经有了）。');
+    }
+    function renderMyWords() {
+        var list = MyWords.all();
+        var box = document.getElementById('myWordsBox');
+        if (!box) return;
+        if (!list.length) { box.innerHTML = '<p style="color:#888;">单词库还是空的，在上面添加自己的单词。</p>'; return; }
+        var html = '<p style="margin:6px 0;"><strong>我的单词库（' + list.length + ' 词）</strong></p><div>';
+        list.forEach(function(w, i) { html += '<span class="diy-chip">' + escHtml(w.en) + (w.zh ? ' ' + escHtml(w.zh) : '') + '<button onclick="removeMyWord(' + i + ')">✕</button></span>'; });
+        html += '</div><div style="margin-top:8px;"><button class="btn btn-primary" onclick="startMyWords()">▶️ 背我的单词库</button> <button class="btn btn-secondary" onclick="clearMyWords()">清空单词库</button></div>';
+        box.innerHTML = html;
+    }
+    function removeMyWord(i) { var list = MyWords.all(); list.splice(i, 1); MyWords.save(list); renderMyWords(); }
+    function clearMyWords() { MyWords.save([]); renderMyWords(); }
+    function startMyWords() {
+        var list = MyWords.all();
+        if (!list.length) return;
+        var csv = list.map(function(w) { return w.en + ',' + w.zh; }).join('\n');
+        closeDiyModal();
+        parseCSVData(csv, '我的单词库.csv');
+    }
+                // --- Daily learning record (每日完成情况 + 错误率) ---
     var DailyLog = {
         KEY: 'word_spelling_daily',
         load: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },
