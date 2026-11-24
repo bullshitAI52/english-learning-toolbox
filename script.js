@@ -688,6 +688,7 @@ async function rejectUser(userId) {
                 stat.lastPracticed = Date.now();
                 this.save(word, stat);
                 if (typeof WordSRS !== 'undefined') WordSRS.record(word, isCorrect);
+                if (typeof DailyLog !== 'undefined') DailyLog.record(word, isCorrect);
             }
         };
 
@@ -1179,6 +1180,53 @@ async function rejectUser(userId) {
         var b = TEXTBOOK_BOOKS[key];
         if (!b) return;
         parseCSVData(b.csv, b.title + '.csv');
+    }
+
+    // --- Daily learning record (每日完成情况 + 错误率) ---
+    var DailyLog = {
+        KEY: 'word_spelling_daily',
+        load: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },
+        save: function(d) { try { localStorage.setItem(this.KEY, JSON.stringify(d)); } catch (e) {} },
+        todayKey: function() { var d = new Date(); function p(n) { return (n < 10 ? '0' : '') + n; } return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); },
+        record: function(word, isCorrect) {
+        var all = this.load(); var k = this.todayKey();
+        var day = all[k] || { a: 0, c: 0, w: 0, words: {} };
+        day.a++; if (isCorrect) day.c++; else day.w++;
+        if (word) day.words[word] = 1;
+        all[k] = day; this.save(all);
+        },
+        rows: function() {
+        var all = this.load();
+        return Object.keys(all).sort().reverse().map(function(k) {
+            var d = all[k];
+            return { date: k, a: d.a, c: d.c, w: d.w, u: Object.keys(d.words || {}).length, rate: d.a ? Math.round(d.w / d.a * 100) : 0 };
+        });
+        }
+    };
+    function rateClass(r) { return r <= 15 ? 'rate-good' : (r <= 35 ? 'rate-mid' : 'rate-bad'); }
+    function openDailyModal() { renderDaily(); document.getElementById('dailyModal').style.display = 'flex'; }
+    function closeDailyModal() { document.getElementById('dailyModal').style.display = 'none'; }
+    function renderDaily() {
+        var el = document.getElementById('dailyContent');
+        var rows = DailyLog.rows();
+        if (!rows.length) { el.innerHTML = '<p style="color:#888; line-height:1.9;">还没有记录。从今天开始，每次练习都会自动记下来：哪天练了多少、答对答错多少、错误率多少，都在这里看。</p>'; return; }
+        var tk = DailyLog.todayKey();
+        var t = null, ta = 0, tc = 0, tw = 0;
+        rows.forEach(function(r) { ta += r.a; tc += r.c; tw += r.w; if (r.date === tk) t = r; });
+        var html = '';
+        if (t) {
+        html += '<div class="daily-today"><strong>今天（' + t.date + '）</strong><br>练习 <strong>' + t.a + '</strong> 词次 · ✅ 答对 ' + t.c + ' · ❌ 答错 ' + t.w + ' · 错误率 <span class="' + rateClass(t.rate) + '">' + t.rate + '%</span> · 一共练了 ' + t.u + ' 个不同的词</div>';
+        } else {
+        html += '<div class="daily-today"><strong>今天（' + tk + '）</strong><br>今天还没开始练习，点一个词库开始吧。</div>';
+        }
+        html += '<table class="daily-table"><tr><th>日期</th><th>练习</th><th>答对</th><th>答错</th><th>错误率</th><th>单词数</th></tr>';
+        rows.forEach(function(r) {
+        html += '<tr' + (r.date === tk ? ' class="today-row"' : '') + '><td>' + r.date + (r.date === tk ? '（今天）' : '') + '</td><td>' + r.a + '</td><td>' + r.c + '</td><td>' + r.w + '</td><td class="' + rateClass(r.rate) + '">' + r.rate + '%</td><td>' + r.u + '</td></tr>';
+        });
+        html += '</table>';
+        var totalRate = ta ? Math.round(tw / ta * 100) : 0;
+        html += '<p style="color:#888; margin-top:12px;">累计 ' + rows.length + ' 天 · 总练习 ' + ta + ' 词次 · 总错误率 <span class="' + rateClass(totalRate) + '">' + totalRate + '%</span>（错误率 ≤15% 绿色 · ≤35% 黄色 · 更高红色）</p>';
+        el.innerHTML = html;
     }
     function parseCSVData(text, filename, save) {
             save = save !== false;

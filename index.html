@@ -43,6 +43,7 @@
             <button class="mode-btn" onclick="switchMode('dictation')">🎧 听写</button>
             <button class="btn btn-secondary" onclick="resetAllMastered()" style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">🔄 重置已背熟</button>
             <button class="btn btn-secondary" onclick="openHelpModal()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
+            <button class="btn btn-secondary" onclick="openDailyModal()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">📅 学习记录</button>
             <button class="btn btn-secondary" onclick="showStatsDashboard()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">📊 统计</button>
         </div>
 
@@ -156,6 +157,17 @@
     </div>
 
     <!-- Help Modal -->
+        <!-- Daily Learning Record Modal -->
+    <div class="modal-overlay" id="dailyModal">
+        <div class="modal-card" style="width: 700px; max-width: 92%; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-title">📅 学习记录</div>
+            <div id="dailyContent" style="padding: 16px 20px; text-align: left;"></div>
+            <div class="modal-actions" style="padding: 0 20px 18px;">
+                <button class="btn btn-primary" onclick="closeDailyModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="helpModal">
         <div class="modal-card" style="width: 700px; max-width: 90%; max-height: 80vh; overflow-y: auto;">
             <div class="modal-title">📖 使用说明</div>
