@@ -561,18 +561,27 @@ async function rejectUser(userId) {
         // --- Audio ---
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         function playCorrectSound() {
-            if (audioContext.state === 'suspended') audioContext.resume();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.3);
+            // Cheerful "pop" arpeggio: notes bounce up C5 -> E5 -> G5 -> C6
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+                const t = audioContext.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.5];
+                notes.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    osc.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    osc.type = 'triangle';
+                    const start = t + i * 0.07;
+                    osc.frequency.setValueAtTime(freq * 0.75, start);
+                    osc.frequency.exponentialRampToValueAtTime(freq, start + 0.06);
+                    gainNode.gain.setValueAtTime(0.0001, start);
+                    gainNode.gain.exponentialRampToValueAtTime(0.25, start + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, start + 0.24);
+                    osc.start(start);
+                    osc.stop(start + 0.26);
+                });
+            } catch (e) { console.log('Sound error:', e); }
         }
 
         // --- Cloud Persistence ---
