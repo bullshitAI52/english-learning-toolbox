@@ -158,6 +158,21 @@
 
     <!-- Help Modal -->
         <!-- Daily Learning Record Modal -->
+        <!-- Trial Limit Modal -->
+    <div class="modal-overlay" id="trialModal">
+        <div class="modal-card" style="width: 480px; max-width: 92%;">
+            <div class="modal-title">🔒 免费试背已用完</div>
+            <div style="padding: 20px; text-align: left; line-height: 1.9;">
+                <p>未登录可以免费试背 <strong>3 个单词</strong>，你已经试背完啦。</p>
+                <p>登录后可以背全部单词、导入自己的词库，进度还能云端同步，今日复习和学习记录都长期保存。</p>
+            </div>
+            <div class="modal-actions" style="padding: 0 20px 18px;">
+                <button class="btn btn-secondary" onclick="closeTrialModal()">再看看</button>
+                <button class="btn btn-primary" onclick="trialLogin()">👤 去登录</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="dailyModal">
         <div class="modal-card" style="width: 700px; max-width: 92%; max-height: 80vh; overflow-y: auto;">
             <div class="modal-title">📅 学习记录</div>

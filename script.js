@@ -1047,6 +1047,7 @@ async function rejectUser(userId) {
 
             if (userInput === correct) {
                 if (!input.dataset.solved) {
+                    if (typeof TrialGate !== 'undefined' && !TrialGate.allow(correctWord)) { icon.innerHTML = "🔒"; icon.style.display = "inline"; showTrialLock(); return; }
                     WordStats.update(correctWord, true);
                     input.dataset.solved = 'true';
                     playCorrectSound();
@@ -1077,6 +1078,7 @@ async function rejectUser(userId) {
         }
 
         function showSpelling(word) {
+                        if (typeof TrialGate !== 'undefined' && !TrialGate.allow(word)) { showTrialLock(); return; }
             WordStats.update(word, false);
             if (spellTimeout) clearTimeout(spellTimeout);
 
@@ -1228,6 +1230,26 @@ async function rejectUser(userId) {
         html += '<p style="color:#888; margin-top:12px;">累计 ' + rows.length + ' 天 · 总练习 ' + ta + ' 词次 · 总错误率 <span class="' + rateClass(totalRate) + '">' + totalRate + '%</span>（错误率 ≤15% 绿色 · ≤35% 黄色 · 更高红色）</p>';
         el.innerHTML = html;
     }
+        // --- Free trial gate: guests may try 3 words; login removes the limit ---
+    var TrialGate = {
+        KEY: 'word_spelling_trial_words',
+        LIMIT: 3,
+        used: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || []; } catch (e) { return []; } },
+        isLoggedIn: function() { return typeof currentUser !== 'undefined' && !!currentUser; },
+        allow: function(word) {
+        if (this.isLoggedIn()) return true;
+        var u = this.used();
+        if (u.indexOf(word) >= 0) return true;
+        if (u.length >= this.LIMIT) return false;
+        u.push(word);
+        try { localStorage.setItem(this.KEY, JSON.stringify(u)); } catch (e) {}
+        return true;
+        },
+        remaining: function() { return Math.max(0, this.LIMIT - this.used().length); }
+    };
+    function showTrialLock() { document.getElementById('trialModal').style.display = 'flex'; }
+    function closeTrialModal() { document.getElementById('trialModal').style.display = 'none'; }
+    function trialLogin() { closeTrialModal(); if (typeof openAuthModal === 'function') openAuthModal(); }
     function parseCSVData(text, filename, save) {
             save = save !== false;
             allWordData = text.split('\n').map(function(line) {
