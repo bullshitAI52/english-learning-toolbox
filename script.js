@@ -1244,7 +1244,163 @@ async function rejectUser(userId) {
         html += '<div class="page-row"><span>按页数背：第</span><input type="number" id="pageFrom" class="page-input" min="1" placeholder="' + b.units[0].start + '"><span>页到第</span><input type="number" id="pageTo" class="page-input" min="1" placeholder="' + b.units[b.units.length - 1].end + '"><span>页</span><button class="btn btn-primary page-go" onclick="loadByPages()">按页数背</button></div>';
         bar.innerHTML = html;
     }
-    // --- Daily learning record (每日完成情况 + 错误率) ---
+    // --- DIY mode: parent-picked words + custom sentences ---
+    var DiyStore = {
+        WKEY: 'word_spelling_diy_words',
+        SKEY: 'word_spelling_diy_sentences',
+        words: function() { try { return JSON.parse(localStorage.getItem(this.WKEY)) || []; } catch (e) { return []; } },
+        saveWords: function(w) { try { localStorage.setItem(this.WKEY, JSON.stringify(w)); } catch (e) {} },
+        sents: function() { try { return JSON.parse(localStorage.getItem(this.SKEY)) || []; } catch (e) { return []; } },
+        saveSents: function(x) { try { localStorage.setItem(this.SKEY, JSON.stringify(x)); } catch (e) {} }
+    };
+    function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function openDiyModal() { initDiyPicker(); renderDiyWords(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
+    function closeDiyModal() { document.getElementById('diyModal').style.display = 'none'; }
+    var diyLastBook = null;
+    function initDiyPicker() {
+        var bs = document.getElementById('diyBookSel');
+        if (!bs.options.length) {
+        var html = '';
+        TEXTBOOK_STAGES.forEach(function(g) { g.books.forEach(function(it) { if (TEXTBOOK_BOOKS[it.key]) html += '<option value="' + it.key + '">' + TEXTBOOK_BOOKS[it.key].title + '</option>'; }); });
+        bs.innerHTML = html;
+        }
+        renderPicker();
+    }
+    function renderUnitSel() {
+        var key = document.getElementById('diyBookSel').value;
+        var b = TEXTBOOK_BOOKS[key];
+        var html = '<option value="-1">整册</option>';
+        b.units.forEach(function(u, i) { html += '<option value="' + i + '">' + u.name + '（第' + u.start + '–' + u.end + '页）</option>'; });
+        document.getElementById('diyUnitSel').innerHTML = html;
+    }
+    function renderPicker() {
+        var key = document.getElementById('diyBookSel').value;
+        if (key !== diyLastBook) { diyLastBook = key; renderUnitSel(); }
+        var b = TEXTBOOK_BOOKS[key];
+        var ui = parseInt(document.getElementById('diyUnitSel').value, 10);
+        var csv = ui >= 0 ? b.units[ui].csv : mergeUnitCSVs(b.units);
+        var html = '';
+        csv.split('\n').forEach(function(line) {
+        line = line.trim(); if (!line) return;
+        var idx = line.indexOf(',');
+        var en = line.slice(0, idx).trim(), zh = line.slice(idx + 1).trim();
+        html += '<label class="pick-item"><input type="checkbox" class="pick-check" value="' + escHtml(en) + '" data-zh="' + escHtml(zh) + '"><span class="en">' + escHtml(en) + '</span><span class="zh">' + escHtml(zh) + '</span></label>';
+        });
+        document.getElementById('pickList').innerHTML = html || '<p style="color:#888;padding:8px;">这个范围没有单词。</p>';
+    }
+    function pickerSelectAll(on) { var cs = document.querySelectorAll('.pick-check'); for (var i = 0; i < cs.length; i++) cs[i].checked = on; }
+    function addPickedToDiy() {
+        var cs = document.querySelectorAll('.pick-check');
+        var list = DiyStore.words();
+        var seen = {}; list.forEach(function(w) { seen[w.en.toLowerCase()] = 1; });
+        var added = 0;
+        for (var i = 0; i < cs.length; i++) { if (!cs[i].checked) continue; var en = cs[i].value; if (seen[en.toLowerCase()]) continue; seen[en.toLowerCase()] = 1; list.push({ en: en, zh: cs[i].getAttribute('data-zh') || '' }); added++; }
+        DiyStore.saveWords(list);
+        renderDiyWords();
+        alert(added ? '已加入 ' + added + ' 个词，DIY词单现有 ' + list.length + ' 个词。' : '没有新词加入（没勾选，或已经在词单里了）。');
+    }
+    function renderDiyWords() {
+        var list = DiyStore.words();
+        var box = document.getElementById('diyWordsBox');
+        if (!list.length) { box.innerHTML = '<p style="color:#888;">DIY词单还是空的，在上面勾选单词加入。</p>'; return; }
+        var html = '<p style="margin:6px 0;"><strong>DIY词单（' + list.length + ' 词）</strong></p><div>';
+        list.forEach(function(w, i) { html += '<span class="diy-chip">' + escHtml(w.en) + '<button onclick="removeDiyWord(' + i + ')">✕</button></span>'; });
+        html += '</div><div style="margin-top:8px;"><button class="btn btn-primary" onclick="startDiyWords()">▶️ 开始背DIY词单</button> <button class="btn btn-secondary" onclick="clearDiyWords()">清空词单</button></div>';
+        box.innerHTML = html;
+    }
+    function removeDiyWord(i) { var list = DiyStore.words(); list.splice(i, 1); DiyStore.saveWords(list); renderDiyWords(); }
+    function clearDiyWords() { DiyStore.saveWords([]); renderDiyWords(); }
+    function startDiyWords() {
+        var list = DiyStore.words();
+        if (!list.length) return;
+        var csv = list.map(function(w) { return w.en + ',' + w.zh; }).join('\n');
+        closeDiyModal();
+        parseCSVData(csv, 'DIY词单.csv');
+    }
+    function addSentences() {
+        var ta = document.getElementById('diySentInput');
+        var lines = ta.value.split('\n');
+        var list = DiyStore.sents();
+        var added = 0;
+        lines.forEach(function(line) {
+        line = line.trim(); if (!line) return;
+        var parts = line.split('|');
+        if (parts.length < 2 && line.indexOf('｜') >= 0) parts = line.split('｜');
+        var en = (parts[0] || '').trim();
+        var zh = (parts[1] || '').trim();
+        if (!en) return;
+        list.push({ en: en, zh: zh });
+        added++;
+        });
+        DiyStore.saveSents(list);
+        ta.value = '';
+        renderDiySents();
+        if (!added) alert('没有读到句子：每行一句，格式是 英文|中文。');
+    }
+    function renderDiySents() {
+        var list = DiyStore.sents();
+        var box = document.getElementById('diySentBox');
+        if (!list.length) { box.innerHTML = '<p style="color:#888;">句子单还是空的，在上面输入句子加入。</p>'; return; }
+        var html = '<p style="margin:6px 0;"><strong>句子单（' + list.length + ' 句）</strong></p>';
+        list.forEach(function(s, i) { html += '<div class="sent-item"><span>' + escHtml(s.en) + (s.zh ? ' <span style="color:#888;">' + escHtml(s.zh) + '</span>' : '') + '</span><button onclick="removeSentence(' + i + ')">✕ 删除</button></div>'; });
+        html += '<div style="margin-top:8px;"><button class="btn btn-primary" onclick="startSentences()">▶️ 开始背句子</button> <button class="btn btn-secondary" onclick="clearSentences()">清空句子单</button></div>';
+        box.innerHTML = html;
+    }
+    function removeSentence(i) { var list = DiyStore.sents(); list.splice(i, 1); DiyStore.saveSents(list); renderDiySents(); }
+    function clearSentences() { DiyStore.saveSents([]); renderDiySents(); }
+    function normalizeSentence(s) { return String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+    function startSentences() {
+        var list = DiyStore.sents();
+        if (!list.length) return;
+        closeDiyModal();
+        var html = '';
+        list.forEach(function(s, i) {
+        html += '<div class="word-item sent-card" data-sent="' + i + '">'
+            + '<div class="sent-zh">' + (s.zh ? escHtml(s.zh) : '✍️ 把这个句子拼出来') + '</div>'
+            + '<div><button style="background:#1CB0F6;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;" onclick="speakWord(\'' + escHtml(s.en).replace(/'/g, "\\'") + '\')">🔊 听发音</button> '
+            + '<button class="btn btn-secondary" onclick="peekSentence(this)">👀 看英文</button></div>'
+            + '<div class="sent-answer" style="display:none; color:#46A302; font-weight:700; margin-top:6px;">' + escHtml(s.en) + '</div>'
+            + '<input type="text" class="sent-input" placeholder="把这个句子打出来…" autocomplete="off">'
+            + '<div><button class="btn btn-primary" onclick="checkSentence(this)">✔ 检查</button> <span class="sent-feedback" style="font-weight:700;"></span></div>'
+            + '</div>';
+        });
+        document.getElementById('wordList').innerHTML = html;
+        var st = document.getElementById('fileStatus'); if (st) st.innerText = '已加载: DIY句子单 (' + list.length + '个句子)';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function peekSentence(btn) {
+        var card = btn.closest('.sent-card');
+        var ans = card.querySelector('.sent-answer');
+        ans.style.display = ans.style.display === 'none' ? 'block' : 'none';
+    }
+    function checkSentence(btn) {
+        var card = btn.closest('.sent-card');
+        var idx = parseInt(card.getAttribute('data-sent'), 10);
+        var s = DiyStore.sents()[idx];
+        if (!s) return;
+        var input = card.querySelector('.sent-input');
+        var fb = card.querySelector('.sent-feedback');
+        var ok = input.value.trim().length > 0 && normalizeSentence(input.value) === normalizeSentence(s.en);
+        if (ok) {
+        if (!card.dataset.solved) {
+            if (typeof TrialGate !== 'undefined' && !TrialGate.allow(s.en)) { showTrialLock(); return; }
+            card.dataset.solved = '1';
+            WordStats.update(s.en, true);
+            if (typeof playCorrectSound === 'function') playCorrectSound();
+        }
+        fb.innerText = '✅ 答对了！'; fb.style.color = '#46A302';
+        input.style.borderColor = '#58CC02';
+        } else {
+        if (!card.dataset.failed) {
+            if (typeof TrialGate !== 'undefined' && !TrialGate.allow(s.en)) { showTrialLock(); return; }
+            card.dataset.failed = '1';
+            WordStats.update(s.en, false);
+        }
+        fb.innerText = '❌ 再想想，可以点🔊多听几遍'; fb.style.color = '#FF4B4B';
+        input.style.borderColor = '#FF4B4B';
+        }
+    }
+        // --- Daily learning record (每日完成情况 + 错误率) ---
     var DailyLog = {
         KEY: 'word_spelling_daily',
         load: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },

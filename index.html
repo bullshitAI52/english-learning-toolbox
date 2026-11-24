@@ -49,6 +49,7 @@
 
         <div class="textbook-bar" id="textbookBar"></div>
         <div class="unit-bar" id="unitBar"></div>
+        <button class="diy-open-btn" onclick="openDiyModal()">🧩 自由DIY（家长挑词 · 背句子）</button>
 
         <div class="time-display" id="currentTime"></div>
 
@@ -164,6 +165,37 @@
             <div class="modal-actions" style="padding: 0 20px 18px;">
                 <button class="btn btn-secondary" onclick="closeTrialModal()">再看看</button>
                 <button class="btn btn-primary" onclick="trialLogin()">👤 去登录</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- DIY Modal: parent-picked words + custom sentences -->
+    <div class="modal-overlay" id="diyModal">
+        <div class="modal-card" style="width: 720px; max-width: 94%; max-height: 86vh; overflow-y: auto;">
+            <div class="modal-title">🧩 自由DIY</div>
+            <div style="padding: 16px 20px; text-align: left;">
+                <h3 style="margin: 4px 0 8px;">🎯 家长挑词（从教材词库里勾选）</h3>
+                <div class="diy-selects">
+                    <select id="diyBookSel" onchange="renderPicker()"></select>
+                    <select id="diyUnitSel" onchange="renderPicker()"></select>
+                    <button class="btn btn-secondary" onclick="pickerSelectAll(true)">全选</button>
+                    <button class="btn btn-secondary" onclick="pickerSelectAll(false)">清空勾选</button>
+                </div>
+                <div id="pickList" class="pick-list"></div>
+                <div style="margin: 10px 0;">
+                    <button class="btn btn-primary" onclick="addPickedToDiy()">➕ 把勾选的词加入DIY词单</button>
+                </div>
+                <div id="diyWordsBox"></div>
+                <h3 style="margin: 18px 0 8px;">✍️ 背句子（自己输入，一行一句）</h3>
+                <p style="color:#888; font-size: 13px; margin: 4px 0;">格式：英文句子|中文意思（中文可省略），例如：<br>I like apples.|我喜欢苹果。</p>
+                <textarea id="diySentInput" class="diy-sent-input" rows="4" placeholder="I like apples.|我喜欢苹果。&#10;This is my school.|这是我的学校。"></textarea>
+                <div style="margin: 10px 0;">
+                    <button class="btn btn-primary" onclick="addSentences()">➕ 加入句子单</button>
+                </div>
+                <div id="diySentBox"></div>
+            </div>
+            <div class="modal-actions" style="padding: 0 20px 18px;">
+                <button class="btn btn-secondary" onclick="closeDiyModal()">关闭</button>
             </div>
         </div>
     </div>
