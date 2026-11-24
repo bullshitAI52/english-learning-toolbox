@@ -904,7 +904,7 @@ async function rejectUser(userId) {
 
         // --- Rendering ---
         function renderPage(page) {
-        renderTextbookBar();
+        renderTextbookBar(); renderSchoolBar();
             currentPage = page;
             DataPersistence.savePage(page);
             updateReviewBadge();
@@ -1254,7 +1254,7 @@ async function rejectUser(userId) {
         saveSents: function(x) { try { localStorage.setItem(this.SKEY, JSON.stringify(x)); } catch (e) {} }
     };
     function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-    function openDiyModal() { initDiyPicker(); renderDiyWords(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
+    function openDiyModal() { initSchoolPicker(); initDiyPicker(); renderDiyWords(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
     function closeDiyModal() { document.getElementById('diyModal').style.display = 'none'; }
     var diyLastBook = null;
     function initDiyPicker() {
@@ -1357,7 +1357,7 @@ async function rejectUser(userId) {
         list.forEach(function(s, i) {
         html += '<div class="word-item sent-card" data-sent="' + i + '">'
             + '<div class="sent-zh">' + (s.zh ? escHtml(s.zh) : '✍️ 把这个句子拼出来') + '</div>'
-            + '<div><button style="background:#1CB0F6;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;" onclick="speakWord(\'' + escHtml(s.en).replace(/'/g, "\\'") + '\')">🔊 听发音</button> '
+            + '<div><button style="background:#1CB0F6;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;" onclick="playSound(\'' + escHtml(s.en).replace(/'/g, "\\'") + '\')">🔊 听发音</button> '
             + '<button class="btn btn-secondary" onclick="peekSentence(this)">👀 看英文</button></div>'
             + '<div class="sent-answer" style="display:none; color:#46A302; font-weight:700; margin-top:6px;">' + escHtml(s.en) + '</div>'
             + '<input type="text" class="sent-input" placeholder="把这个句子打出来…" autocomplete="off">'
@@ -1400,7 +1400,86 @@ async function rejectUser(userId) {
         input.style.borderColor = '#FF4B4B';
         }
     }
-        // --- Daily learning record (每日完成情况 + 错误率) ---
+    // --- School progress: follow the school curriculum ---
+    var SchoolStore = {
+        KEY: 'word_spelling_school',
+        get: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || null; } catch (e) { return null; } },
+        set: function(v) { try { localStorage.setItem(this.KEY, JSON.stringify(v)); } catch (e) {} }
+    };
+    function schoolUnits() {
+        var p = SchoolStore.get();
+        if (!p || !TEXTBOOK_BOOKS[p.book]) return null;
+        var b = TEXTBOOK_BOOKS[p.book];
+        var last = Math.min(p.unit, b.units.length - 1);
+        return { book: p.book, title: b.title, last: last, units: b.units.slice(0, last + 1) };
+    }
+    function renderSchoolBar() {
+        var bar = document.getElementById('schoolBar');
+        if (!bar) return;
+        var sc = schoolUnits();
+        if (!sc) {
+        bar.innerHTML = '<span class="sb-title">🏫 学校进度</span><span>还没设置，设置后可一键背学校学过的内容</span><button class="btn btn-primary" onclick="openDiyModal()">去设置</button>';
+        return;
+        }
+        var n = mergeUnitCSVs(sc.units).split('\n').length;
+        bar.innerHTML = '<span class="sb-title">🏫 学校进度：' + sc.title.replace('PEP ', '') + ' · 学到 ' + TEXTBOOK_BOOKS[sc.book].units[sc.last].name + '</span><button class="btn btn-primary" onclick="loadSchoolWords()">▶️ 背学过的内容（Unit 1–' + (sc.last + 1) + ' · ' + n + '词）</button>';
+    }
+    function loadSchoolWords() {
+        var sc = schoolUnits();
+        if (!sc) { openDiyModal(); return; }
+        closeDiyModal();
+        currentTextbook = sc.book;
+        renderUnitBar();
+        parseCSVData(mergeUnitCSVs(sc.units), sc.title + ' 学校进度（Unit 1–' + (sc.last + 1) + '）.csv');
+    }
+    function addSchoolWordsToDiy() {
+        var sc = schoolUnits();
+        if (!sc) { alert('先在上面选好课本和学到的单元，点「保存进度」。'); return; }
+        var list = DiyStore.words();
+        var seen = {}; list.forEach(function(w) { seen[w.en.toLowerCase()] = 1; });
+        var added = 0;
+        mergeUnitCSVs(sc.units).split('\n').forEach(function(line) {
+        line = line.trim(); if (!line) return;
+        var idx = line.indexOf(',');
+        var en = line.slice(0, idx).trim(), zh = line.slice(idx + 1).trim();
+        if (seen[en.toLowerCase()]) return;
+        seen[en.toLowerCase()] = 1;
+        list.push({ en: en, zh: zh });
+        added++;
+        });
+        DiyStore.saveWords(list);
+        renderDiyWords();
+        alert('已把学校进度内的词加入DIY词单（新增 ' + added + ' 个，词单现有 ' + list.length + ' 个）。');
+    }
+    function initSchoolPicker() {
+        var bs = document.getElementById('schoolBookSel');
+        if (!bs.options.length) {
+        var html = '';
+        TEXTBOOK_STAGES.forEach(function(g) { g.books.forEach(function(it) { if (TEXTBOOK_BOOKS[it.key]) html += '<option value="' + it.key + '">' + TEXTBOOK_BOOKS[it.key].title + '</option>'; }); });
+        bs.innerHTML = html;
+        var p = SchoolStore.get();
+        if (p && TEXTBOOK_BOOKS[p.book]) bs.value = p.book;
+        }
+        renderSchoolUnitSel();
+    }
+    function renderSchoolUnitSel() {
+        var key = document.getElementById('schoolBookSel').value;
+        var b = TEXTBOOK_BOOKS[key];
+        var html = '';
+        b.units.forEach(function(u, i) { html += '<option value="' + i + '">学到 ' + u.name + '（第' + u.start + '–' + u.end + '页）</option>'; });
+        var sel = document.getElementById('schoolUnitSel');
+        sel.innerHTML = html;
+        var p = SchoolStore.get();
+        if (p && p.book === key) sel.value = String(Math.min(p.unit, b.units.length - 1));
+    }
+    function saveSchoolProgress() {
+        var book = document.getElementById('schoolBookSel').value;
+        var unit = parseInt(document.getElementById('schoolUnitSel').value, 10) || 0;
+        SchoolStore.set({ book: book, unit: unit });
+        renderSchoolBar();
+        alert('学校进度已保存：' + TEXTBOOK_BOOKS[book].title + ' · 学到 ' + TEXTBOOK_BOOKS[book].units[unit].name + '。');
+    }
+            // --- Daily learning record (每日完成情况 + 错误率) ---
     var DailyLog = {
         KEY: 'word_spelling_daily',
         load: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || {}; } catch (e) { return {}; } },

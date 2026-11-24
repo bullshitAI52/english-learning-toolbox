@@ -1116,3 +1116,8 @@
 .sent-item button { border: none; background: none; cursor: pointer; color: #c0392b; }
 .sent-card .sent-zh { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
 .sent-card .sent-input { width: 100%; box-sizing: border-box; padding: 12px; font-size: 16px; border: 2px solid #e5e5e5; border-radius: 10px; margin: 8px 0; }
+
+.school-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #fff8e1; border: 1px solid #ffe082; border-radius: 12px; padding: 10px 12px; margin: 0 0 12px; font-size: 14px; }
+.school-bar:empty { display: none; }
+.school-bar .sb-title { font-weight: 800; }
+.school-bar button { margin-left: auto; }

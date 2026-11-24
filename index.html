@@ -50,6 +50,7 @@
         <div class="textbook-bar" id="textbookBar"></div>
         <div class="unit-bar" id="unitBar"></div>
         <button class="diy-open-btn" onclick="openDiyModal()">🧩 自由DIY（家长挑词 · 背句子）</button>
+        <div class="school-bar" id="schoolBar"></div>
 
         <div class="time-display" id="currentTime"></div>
 
@@ -174,6 +175,17 @@
         <div class="modal-card" style="width: 720px; max-width: 94%; max-height: 86vh; overflow-y: auto;">
             <div class="modal-title">🧩 自由DIY</div>
             <div style="padding: 16px 20px; text-align: left;">
+                                <h3 style="margin: 4px 0 8px;">🏫 学校进度（配合学校课程）</h3>
+                <div class="diy-selects">
+                    <select id="schoolBookSel" onchange="renderSchoolUnitSel()"></select>
+                    <select id="schoolUnitSel"></select>
+                    <button class="btn btn-primary" onclick="saveSchoolProgress()">保存进度</button>
+                </div>
+                <div style="margin: 6px 0 4px;">
+                    <button class="btn btn-primary" onclick="loadSchoolWords()">▶️ 背学过的内容（累计）</button>
+                    <button class="btn btn-secondary" onclick="addSchoolWordsToDiy()">➕ 把进度内的词加入DIY词单</button>
+                </div>
+                <p style="color:#888; font-size: 13px; margin: 4px 0 14px;">设置一次就行：以后点教材区下面的「背学过的内容」，就自动背从 Unit 1 到学校当前单元的全部词。</p>
                 <h3 style="margin: 4px 0 8px;">🎯 家长挑词（从教材词库里勾选）</h3>
                 <div class="diy-selects">
                     <select id="diyBookSel" onchange="renderPicker()"></select>
