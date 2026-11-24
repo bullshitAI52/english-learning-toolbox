@@ -1089,3 +1089,12 @@
     .container { max-width: 1240px; }
     #wordList { grid-template-columns: 1fr 1fr 1fr; }
 }
+
+/* ===== Unit bar + by-page practice ===== */
+.unit-bar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 2px 0 12px; align-items: stretch; }
+.unit-bar:empty { display: none; }
+.unit-btn { font-size: 15px; padding: 9px 4px; }
+.page-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; background: var(--card-bg, #fff); border: 1px solid #e5e5e5; border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.page-input { width: 64px; padding: 8px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 15px; text-align: center; }
+.page-go { padding: 8px 16px; font-size: 14px; margin-left: auto; }
+@media (min-width: 768px) { .unit-bar { grid-template-columns: repeat(4, 1fr); } }
