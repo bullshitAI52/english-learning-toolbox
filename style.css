@@ -1068,3 +1068,24 @@
             padding: 4px 0;
             min-height: 32px;
         }
+
+/* ===== Layout polish: even grids + tablet (iPad) adaptation ===== */
+.mode-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; justify-content: stretch; }
+.mode-bar > button { width: 100%; margin-left: 0 !important; }
+.textbook-bar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 8px 0 14px; align-items: stretch; }
+.textbook-label { grid-column: 1 / -1; font-size: 17px; font-weight: 800; }
+.tb-btn { width: 100%; }
+#wordList > div:only-child { grid-column: 1 / -1; }
+@media (min-width: 768px) {
+    .container { max-width: 1080px; padding: 30px 34px; }
+    .header { font-size: 34px; }
+    .mode-bar { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .textbook-bar { grid-template-columns: repeat(4, 1fr); }
+    .tb-btn { font-size: 19px; padding: 14px 6px; }
+    #wordList { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .word-item { margin-bottom: 0; }
+}
+@media (min-width: 1240px) {
+    .container { max-width: 1240px; }
+    #wordList { grid-template-columns: 1fr 1fr 1fr; }
+}

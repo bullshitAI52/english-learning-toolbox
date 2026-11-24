@@ -904,6 +904,7 @@ async function rejectUser(userId) {
 
         // --- Rendering ---
         function renderPage(page) {
+        renderTextbookBar();
             currentPage = page;
             DataPersistence.savePage(page);
             updateReviewBadge();
@@ -1178,6 +1179,25 @@ async function rejectUser(userId) {
     'g6a': { title: "PEP 六年级上册", csv: "science,科学\nmuseum,博物馆\npost office,邮局\nbookstore,书店\ncinema,电影院\nhospital,医院\ncrossing,十字路口\nturn,转弯\nleft,左\nstraight,笔直地\nright,右\nask,问\nsir,先生\ninteresting,有趣的\nItalian,意大利的\nrestaurant,餐馆\npizza,比萨饼\nstreet,大街；街道\nget,到达\nBDS,北斗卫星导航系统\ngave,提供；交给\nfeature,特点\nfollow,跟着\nfar,远的\ntell,告诉\non foot,步行\nby,乘\nbus,公共汽车\nplane,飞机\ntaxi,出租汽车\nship,（大）船\nsubway,地铁\ntrain,火车\nslow,慢的\ndown,减少；降低\nslow down,慢下来\nstop,停下\nMrs,夫人\nearly,早到的\nhelmet,头盔\nmust,必须\nwear,穿；戴\nattention,注意\npay attention to,注意\ntraffic,交通\ntraffic lights,交通信号灯\nMunich,慕尼黑\nGermany,德国\nAlaska,阿拉斯加州\nsled,雪橇\nfast,快\nferry,轮渡\nPapa Westray,帕帕韦斯特雷岛\nScotland,苏格兰\nvisit,拜访\nfilm,电影\nsee a film,看电影\ntrip,旅行\ntake a trip,去旅行\nsupermarket,超市\nevening,晚上；傍晚\ntonight,在今晚\ntomorrow,明天\nnext week,下周\ndictionary,词典\ncomic,滑稽的\ncomic book,连环画册\nword,单词\nword book,单词书\npostcard,明信片\nlesson,课\nspace,太空\ntravel,（尤指长途）旅行\nhalf,一半\nprice,价格\nMid-Autumn Festival,中秋节\ntogether,一起\nget together,聚会\nmooncake,月饼\npoem,诗\nmoon,月亮\nstudies,学习\npuzzle,谜\nhiking,远足\npen pal,笔友\nhobby,业余爱好\njasmine,茉莉\nidea,想法；主意\nCanberra,堪培拉\namazing,令人惊奇的\nshall,表示征求意见\ngoal,射门\njoin,加入\nclub,俱乐部\nshare,分享\nfactory,工厂\nworker,工人\npostman,邮递员\nbusinessman,商人；企业家\npolice officer,警察\nfisherman,渔民\nscientist,科学家\npilot,飞行员\ncoach,教练\ncountry,国家\nhead teacher,校长\nsea,大海\nstay,保持\nuniversity,大学\ngym,体育馆\nif,如果\nreporter,记者\nuse,使用\ntype,打字\nquickly,迅速地\nsecretary,秘书\nangry,生气的\nafraid,害怕\nsad,难过的\nworried,担心的；发愁的\nhappy,高兴的\nsee a doctor,看病\nmore,更多的\ndeep,深的\nbreath,呼吸\ntake a deep breath,深深吸一口气\ncount,数数\ncount to ten,数到十\nchase,追赶\nmice,老鼠（mouse的复数）\nbad,邪恶的；坏的\nhurt,（使）受伤\nill,有病；不舒服\nwrong,有毛病\nshould,应该\nfeel,觉得；感到\nwell,健康；身体好\nsit,坐\ngrass,草坪\nhear,听见\nant,蚂蚁\nworry,担心；担忧\nstuck,陷住；无法移动\nmud,泥\npull,拉；拽\neveryone,每人" },
     'g6b': { title: "PEP 六年级下册", csv: "younger,更年轻的\nolder,更年长的\ntaller,更高的\nshorter,更矮的；更短的\nlonger,更长的\nthinner,更瘦的\nheavier,更重的\nbigger,更大的\nsmaller,更小的\nstronger,更强壮的\ndinosaur,恐龙\nhall,大厅\nmetre,米\nthan,比\nboth,两个都\nkilogram,千克；公斤\ncountryside,乡村\nlower,更低地\nshadow,阴影；影子\nsmarter,更聪明的\nbecome,开始变得；变成\ncleaned,打扫\nstayed,停留；待\nwashed,洗\nwatched,看\nhad,患病；得病\nhad a cold,感冒\nslept,睡觉\nread,读\nsaw,看见\nlast,最近的；上一个的\nyesterday,昨天\nbefore,在……之前\ndrank,喝\nshow,演出\nmagazine,杂志\nbetter,更好的\nfaster,更快的\nhotel,旅馆\nfixed,修理\nbroken,破损的\nlamp,台灯\nloud,喧闹的；大声的\nenjoy,享受……乐趣；喜爱\nstay,暂住；逗留\nwent,去\ncamp,野营\nwent camping,野营\nfish,钓鱼；捕鱼\nwent fishing,去钓鱼\nrode,骑（马；自行车）\nhurt,（使）受伤\nate,吃\ntook,拍照\ntook pictures,照相\nbought,买\ngift,礼物\nfell,摔倒\noff,从（某处）落下\nLabour Day,劳动节\nmule,骡子\nTurpan,吐鲁番\ncould,能\ntill,直到\nbeach,海滩；沙滩\nbasket,篮；筐\npart,角色\nlicked,舔\nlaughed,笑\ndining hall,饭厅\ngrass,草坪\ngym,体育馆\nago,以前\ncycling,骑自行车运动\ngo cycling,去骑自行车\nice-skate,滑冰\nbadminton,羽毛球运动\nstar,星\neasy,容易的\nlook up,查阅\nInternet,互联网\ndifferent,不同的\nactive,积极的；活跃的\nrace,赛跑\nnothing,没有什么\nthought,想\nfelt,感觉\ncheetah,猎豹\ntrip,绊倒\nwoke,醒\ndream,梦" }
     };
+        // 教材分组：以后加初中时，只需在 TEXTBOOK_BOOKS 里加词表、再往这里加一组即可，界面自动生成按钮
+    var TEXTBOOK_STAGES = [
+        { stage: '小学', books: [ { key: 'g5a', short: '5上' }, { key: 'g5b', short: '5下' }, { key: 'g6a', short: '6上' }, { key: 'g6b', short: '6下' } ] }
+    ];
+    function renderTextbookBar() {
+        var bar = document.getElementById('textbookBar');
+        if (!bar || typeof TEXTBOOK_BOOKS === 'undefined') return;
+        var html = '';
+        TEXTBOOK_STAGES.forEach(function(g) {
+        html += '<span class="textbook-label">📚 教材词库 · ' + g.stage + '</span>';
+        g.books.forEach(function(it) {
+            var b = TEXTBOOK_BOOKS[it.key];
+            if (!b) return;
+            var n = b.csv.split('\n').filter(function(x) { return x.trim(); }).length;
+            html += '<button class="tb-btn" onclick="loadTextbook(\'' + it.key + '\')">' + it.short + '<span class="tb-sub">' + b.title.replace('PEP ', '') + ' · ' + n + '词</span></button>';
+        });
+        });
+        bar.innerHTML = html;
+    }
     function loadTextbook(key) {
         var b = TEXTBOOK_BOOKS[key];
         if (!b) return;
