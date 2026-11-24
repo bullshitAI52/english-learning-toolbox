@@ -39,7 +39,8 @@
             <button class="mode-btn" onclick="switchMode('new')">🆕 未背诵</button>
             <button class="mode-btn" onclick="switchMode('mistake')">❌ 易错题</button>
             <button class="mode-btn" onclick="switchMode('mastered')">✅ 已背熟</button>
-            <button class="mode-btn" onclick="switchMode('review')">🔄 待复习</button>
+            <button class="mode-btn" onclick="switchMode('review')">🔁 今日复习 <span id="reviewBadge" class="mode-badge" style="display:none"></span></button>
+            <button class="mode-btn" onclick="switchMode('dictation')">🎧 听写</button>
             <button class="btn btn-secondary" onclick="resetAllMastered()" style="margin-left: 10px; font-size: 12px; padding: 5px 12px;">🔄 重置已背熟</button>
             <button class="btn btn-secondary" onclick="openHelpModal()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">❓ 使用说明</button>
             <button class="btn btn-secondary" onclick="showStatsDashboard()" style="margin-left: 5px; font-size: 12px; padding: 5px 12px;">📊 统计</button>

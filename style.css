@@ -1,38 +1,38 @@
         :root {
-            --bg-color: #FFF9F0;
-            --text-color: #2B2118;
-            --text-secondary: #7A6A58;
+            --bg-color: #F7F7F7;
+            --text-color: #4B4B4B;
+            --text-secondary: #777777;
             --card-bg: #FFFFFF;
-            --border-color: #F0E2CD;
-            --input-bg: #FFFDF8;
-            --input-border: #E8D9BE;
-            --primary-color: #FF8A00;
-            --primary-hover: #FF9E2C;
-            --primary-deep: #D96F00;
-            --soft-bg: #F7EDDA;
+            --border-color: #E5E5E5;
+            --input-bg: #FFFFFF;
+            --input-border: #E5E5E5;
+            --primary-color: #58CC02;
+            --primary-hover: #61E002;
+            --primary-deep: #46A302;
+            --soft-bg: #F0F0F0;
             --sidebar-bg: #FFFFFF;
-            --sidebar-hover: #FFF3E0;
-            --sidebar-active: #FFE8C7;
-            --success-color: #22B573;
-            --danger-color: #FF5A5F;
+            --sidebar-hover: #F7F7F7;
+            --sidebar-active: #EAF9DC;
+            --success-color: #58CC02;
+            --danger-color: #FF4B4B;
         }
 
         [data-theme="dark"] {
-            --bg-color: #1E1A16;
-            --text-color: #F2E9DC;
-            --text-secondary: #B8A88F;
-            --card-bg: #2A251F;
-            --border-color: #453B2F;
-            --input-bg: #2F2820;
-            --input-border: #55462F;
-            --primary-color: #FFA63D;
-            --primary-hover: #FFB35C;
-            --primary-deep: #D98A26;
-            --soft-bg: #3A3128;
-            --sidebar-bg: #2A251F;
-            --sidebar-hover: #3A3128;
-            --sidebar-active: #4A3A26;
-            --success-color: #2ECC85;
+            --bg-color: #131F24;
+            --text-color: #E8F0F2;
+            --text-secondary: #A7B8BF;
+            --card-bg: #1E2A33;
+            --border-color: #37464F;
+            --input-bg: #16222A;
+            --input-border: #37464F;
+            --primary-color: #58CC02;
+            --primary-hover: #61E002;
+            --primary-deep: #46A302;
+            --soft-bg: #2A3B47;
+            --sidebar-bg: #1E2A33;
+            --sidebar-hover: #2A3B47;
+            --sidebar-active: #2F4A2A;
+            --success-color: #58CC02;
             --danger-color: #FF7A7E;
         }
 
@@ -51,12 +51,12 @@
         }
 
         ::selection {
-            background: rgba(255, 138, 0, 0.28);
+            background: rgba(88, 204, 2, 0.25);
         }
 
         button:focus-visible,
         input:focus-visible {
-            outline: 3px solid rgba(255, 138, 0, 0.55);
+            outline: 3px solid rgba(28, 176, 246, 0.6);
             outline-offset: 2px;
         }
 
@@ -65,7 +65,7 @@
             font-size: clamp(24px, 5vw, 34px);
             font-weight: 900;
             letter-spacing: 0.02em;
-            color: var(--text-color);
+            color: var(--primary-deep);
             margin: 6px auto 14px;
             max-width: 880px;
         }
@@ -176,13 +176,13 @@
         }
 
         .stat-badge.wrong {
-            color: #E5484D;
-            background: #FFE9E9;
+            color: #FF4B4B;
+            background: #FFE8E8;
         }
 
         .stat-badge.correct {
-            color: #1D9E63;
-            background: #E4F8EC;
+            color: #46A302;
+            background: #EAF9DC;
         }
 
         [data-theme="dark"] .stat-badge.wrong {
@@ -191,7 +191,7 @@
         }
 
         [data-theme="dark"] .stat-badge.correct {
-            color: #5FD68F;
+            color: #7ED957;
             background: #274435;
         }
 
@@ -301,14 +301,14 @@
         }
 
         .input-box::placeholder {
-            color: #B8A88F;
+            color: #BDBDBD;
             font-weight: 500;
         }
 
         .input-box:focus {
             border-color: var(--primary-color);
             background-color: var(--card-bg);
-            box-shadow: 0 0 0 4px rgba(255, 138, 0, 0.18);
+            box-shadow: 0 0 0 4px rgba(88, 204, 2, 0.22);
         }
 
         .check-icon {
@@ -345,7 +345,7 @@
         }
 
         .btn-sound {
-            background-color: var(--success-color);
+            background-color: #1CB0F6;
             color: white;
         }
 
@@ -354,12 +354,12 @@
         }
 
         .btn-spell {
-            background-color: #FFC93D;
+            background-color: #FFC800;
             color: #5B4300;
         }
 
         .btn-spell:hover {
-            background-color: #FFBE1A;
+            background-color: #F0B400;
         }
 
         .pagination {
@@ -411,7 +411,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(24, 18, 12, 0.96);
+            background: rgba(19, 31, 36, 0.97);
             color: white;
             display: none;
             justify-content: center;
@@ -422,7 +422,7 @@
         }
 
         .spell-letter {
-            color: #FFC93D;
+            color: #FFC800;
             font-weight: bold;
             font-size: clamp(40px, 12vw, 100px);
             margin: 0 clamp(5px, 2vw, 20px);
@@ -464,7 +464,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(30, 22, 14, 0.5);
+            background: rgba(19, 31, 36, 0.5);
             backdrop-filter: blur(3px);
             display: none;
             justify-content: center;
@@ -888,7 +888,7 @@
 
         .auth-input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(255, 138, 0, 0.18);
+            box-shadow: 0 0 0 4px rgba(88, 204, 2, 0.22);
         }
 
         .auth-error {
@@ -950,9 +950,9 @@
             cursor: pointer;
         }
 
-        .toast-success { background: #22B573; }
-        .toast-error { background: #FF5A5F; }
-        .toast-info { background: #2E9BFF; }
+        .toast-success { background: #58CC02; }
+        .toast-error { background: #FF4B4B; }
+        .toast-info { background: #1CB0F6; }
 
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
@@ -986,3 +986,72 @@
         .confirm-card .confirm-msg { font-size: 16px; margin-bottom: 22px; line-height: 1.6; white-space: pre-line; }
         .confirm-card .confirm-btns { display: flex; gap: 10px; justify-content: center; }
         .confirm-card .confirm-btns button { min-width: 96px; }
+
+        /* Review badge + dictation */
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            border-radius: 999px;
+            background: #FF4B4B;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        .dictation-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-listen {
+            width: 72px;
+            height: 72px;
+            min-width: 72px;
+            border-radius: 50%;
+            border: none;
+            background: #1CB0F6;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18), 0 3px 8px rgba(75, 75, 75, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.08s ease;
+        }
+
+        .btn-listen:active {
+            transform: translateY(2px);
+        }
+
+        .dictation-side {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+
+        .dictation-tip {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .peek-btn {
+            background: none;
+            border: none;
+            color: #1CB0F6;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 4px 0;
+            min-height: 32px;
+        }
