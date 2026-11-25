@@ -1076,10 +1076,37 @@ async function rejectUser(userId) {
         }
 
         function playSound(word) {
+            let fellBack = false;
+            let audio = null;
+            const fallback = () => {
+                if (fellBack) return;
+                fellBack = true;
+                try { if (audio) audio.pause(); } catch (e) {}
+                speakFallback(word);
+            };
             try {
-                const audio = new Audio(youdaoAPI + encodeURIComponent(word) + '&type=1');
-                audio.play().catch(function(e) { console.log('Audio failed:', e); });
-            } catch (e) { console.log('Audio error:', e); }
+                audio = new Audio(youdaoAPI + encodeURIComponent(word) + '&type=1');
+                audio.volume = 1;
+                audio.addEventListener('error', fallback);
+                const p = audio.play();
+                if (p && p.catch) p.catch(() => fallback());
+                setTimeout(() => { if (!fellBack && audio && audio.readyState < 2) fallback(); }, 2500);
+            } catch (e) {
+                fallback();
+            }
+        }
+        function speakFallback(text) {
+            try {
+                if (!('speechSynthesis' in window)) return;
+                speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'en-US';
+                u.volume = 1;
+                u.rate = 0.95;
+                const vs = speechSynthesis.getVoices();
+                for (let i = 0; i < vs.length; i++) { if (/^en[-_]/i.test(vs[i].lang)) { u.voice = vs[i]; break; } }
+                speechSynthesis.speak(u);
+            } catch (e) {}
         }
 
         function showSpelling(word) {
