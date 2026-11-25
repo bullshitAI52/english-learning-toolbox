@@ -51,7 +51,10 @@
         <div class="unit-bar" id="unitBar"></div>
         <button class="diy-open-btn" onclick="openDiyModal()">🧩 自由DIY（家长挑词 · 背句子）</button>
         <div class="school-bar" id="schoolBar"></div>
-        <button class="reverse-open-btn" id="reverseBtn" onclick="toggleReverse()">🔁 反向选义（看英文选中文）</button>
+        <div class="duo-row">
+            <button class="reverse-open-btn" id="reverseBtn" onclick="toggleReverse()">🔁 反向选义（看英文选中文）</button>
+            <button class="print-open-btn" onclick="openPrintModal()">🖨️ 打印词单 / 听写纸</button>
+        </div>
 
         <div class="time-display" id="currentTime"></div>
 
@@ -278,5 +281,15 @@
     </div>
 
     <script src="script.js?v=3"></script>
+<div id="printModal" class="print-modal" onclick="if(event.target===this)closePrintModal()">
+    <div class="print-modal-box">
+        <h2>🖨️ 打印</h2>
+        <p id="printModalInfo"></p>
+        <button class="print-opt" onclick="doPrintChoice('study')">📖 学习版：英文 + 中文（复习、贴墙看）</button>
+        <button class="print-opt" onclick="doPrintChoice('dictation')">✍️ 听写版：看中文写英文（带姓名、日期栏）</button>
+        <button class="print-opt" onclick="closePrintModal()">取消</button>
+    </div>
+</div>
+<div id="printArea"></div>
 </body>
 </html>

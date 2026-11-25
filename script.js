@@ -1692,7 +1692,37 @@ async function rejectUser(userId) {
     var reverseActive = false;
     function updateReverseBtn() { var b = document.getElementById('reverseBtn'); if (b) b.innerText = reverseActive ? '↩️ 退出反向选义' : '🔁 反向选义（看英文选中文）'; }
     function resetReverse() { reverseActive = false; updateReverseBtn(); }
-    function toggleReverse() {
+    /* ===== 打印词单 / 听写纸 ===== */
+function printEsc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function openPrintModal() {
+    if (typeof allWordData === 'undefined' || !allWordData.length) { alert('先选一册书、一个单元或一份词单，把词加载出来再打印。'); return; }
+    document.getElementById('printModalInfo').textContent = '当前词单共 ' + allWordData.length + ' 词，选一种打印：';
+    document.getElementById('printModal').classList.add('open');
+}
+function closePrintModal() { document.getElementById('printModal').classList.remove('open'); }
+function doPrintChoice(kind) { closePrintModal(); setTimeout(function() { printWordList(kind); }, 80); }
+function printWordList(kind) {
+    if (typeof allWordData === 'undefined' || !allWordData.length) { alert('先选一册书、一个单元或一份词单，把词加载出来再打印。'); return; }
+    var statusEl = document.querySelector('.file-status');
+    var title = statusEl ? statusEl.textContent.replace(/^\s*已加载[:：]\s*/, '').replace(/\.csv.*$/, '') : '';
+    if (!title || title.indexOf('未') === 0) title = '单词表';
+    var now = new Date();
+    var ds = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+    var rows = '', i, w;
+    if (kind === 'dictation') {
+        for (i = 0; i < allWordData.length; i++) { w = allWordData[i]; rows += '<tr><td>' + (i + 1) + '</td><td class="zh">' + printEsc(w.chinese) + '</td><td class="write"></td></tr>'; }
+        document.getElementById('printArea').innerHTML = '<h1>' + printEsc(title) + ' · 听写纸</h1>' +
+            '<p class="pmeta">姓名：____________　日期：____________　共 ' + allWordData.length + ' 词（看中文，默写英文）</p>' +
+            '<table><tr><th style="width:8%">#</th><th style="width:34%">中文</th><th>默写英文</th></tr>' + rows + '</table>';
+    } else {
+        for (i = 0; i < allWordData.length; i++) { w = allWordData[i]; rows += '<tr><td>' + (i + 1) + '</td><td class="en">' + printEsc(w.english) + '</td><td class="zh">' + printEsc(w.chinese) + '</td></tr>'; }
+        document.getElementById('printArea').innerHTML = '<h1>' + printEsc(title) + '</h1>' +
+            '<p class="pmeta">共 ' + allWordData.length + ' 词 · ' + ds + '</p>' +
+            '<table><tr><th style="width:8%">#</th><th style="width:42%">英文</th><th>中文</th></tr>' + rows + '</table>';
+    }
+    window.print();
+}
+function toggleReverse() {
         if (reverseActive) { reverseActive = false; updateReverseBtn(); renderPage(); }
         else { reverseActive = true; updateReverseBtn(); renderReverse(); }
     }

@@ -1137,3 +1137,30 @@
 
 .part-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 14px; font-weight: 700; }
 .part-row:empty { display: none; }
+
+/* ===== 打印词单 ===== */
+.duo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 4px; }
+.duo-row .reverse-open-btn { width: 100%; margin: 0; }
+.print-open-btn { width: 100%; min-height: 48px; border: none; border-bottom: 4px solid #1899D6; background: #1CB0F6; color: #fff; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; padding: 10px 6px; }
+.print-open-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+.print-modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 1200; }
+.print-modal.open { display: flex; }
+.print-modal-box { background: #fff; border-radius: 18px; padding: 22px; width: min(92vw, 420px); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.print-modal-box h2 { margin: 0 0 6px; font-size: 20px; }
+.print-modal-box p { margin: 0 0 6px; color: #777; font-size: 14px; }
+.print-opt { display: block; width: 100%; min-height: 52px; margin: 10px 0 0; border: 2px solid #E5E5E5; border-bottom: 4px solid #E5E5E5; background: #fff; color: #4B4B4B; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; padding: 10px; text-align: left; }
+.print-opt:active { transform: translateY(2px); border-bottom-width: 2px; }
+#printArea { display: none; }
+@media print {
+    @page { margin: 12mm; }
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; color: #000; font-family: sans-serif; }
+    #printArea h1 { font-size: 20px; margin: 0 0 4px; }
+    #printArea .pmeta { font-size: 12px; color: #444; margin: 0 0 10px; }
+    #printArea table { width: 100%; border-collapse: collapse; }
+    #printArea th, #printArea td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+    #printArea th { background: #eee; font-size: 13px; }
+    #printArea td.en { font-size: 17px; font-weight: 700; }
+    #printArea td.zh { font-size: 14px; }
+    #printArea td.write { height: 30px; }
+}
