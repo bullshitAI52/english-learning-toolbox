@@ -197,7 +197,6 @@
         let allWordData = [];
         let displayData = [];
         let currentPage = 1;
-        let startTime;
         let spellTimeout;
         let currentMode = 'all';
         let reviewWordList = [];
@@ -868,30 +867,9 @@ async function rejectUser(userId) {
             document.getElementById('fileInput').click();
         });
 
-        document.getElementById('timerBtn').addEventListener('click', function() {
-            if (!startTime) {
-                startTime = Date.now();
-                document.getElementById('timerBtn').textContent = '停止计时';
-                setInterval(function() {
-                    if (startTime) {
-                        let elapsed = Math.floor((Date.now() - startTime) / 1000);
-                        document.getElementById('elapsedTimeDisplay').textContent = '已用时间: ' + elapsed + ' 秒';
-                    }
-                }, 1000);
-            } else {
-                startTime = null;
-                document.getElementById('timerBtn').textContent = '开始计时';
-            }
-        });
+        
 
-        document.getElementById('screenshotBtn').addEventListener('click', function() {
-            html2canvas(document.body, { scale: window.devicePixelRatio || 1, useCORS: true }).then(function(canvas) {
-                const link = document.createElement('a');
-                link.download = '拼写检测截图_' + new Date().toISOString().slice(0, 19) + '.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        });
+        
 
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
