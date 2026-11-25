@@ -201,6 +201,7 @@
         let currentMode = 'all';
         let reviewWordList = [];
         const WORDS_PER_PAGE = 10;
+        function pageSize() { return currentMode === 'dictation' ? Math.max(displayData.length, 1) : WORDS_PER_PAGE; }
         const youdaoAPI = 'https://dict.youdao.com/dictvoice?audio=';
 
         // --- Auth Functions ---
@@ -886,7 +887,7 @@ async function rejectUser(userId) {
             currentPage = page;
             DataPersistence.savePage(page);
             updateReviewBadge();
-            const start = (page - 1) * WORDS_PER_PAGE;
+            const start = (page - 1) * pageSize();
 
             if (displayData.length === 0) {
                 var emptyMsg = currentMode === 'review' ? '今天没有要复习的单词，去学几个新词吧' : '当前模式下没有单词哦';
@@ -894,7 +895,7 @@ async function rejectUser(userId) {
                 return;
             }
 
-            const words = displayData.slice(start, start + WORDS_PER_PAGE);
+            const words = displayData.slice(start, start + pageSize());
             const isDictation = currentMode === 'dictation';
             document.getElementById('wordList').innerHTML = words.map(function(word, index) {
                 const stats = WordStats.get(word.english);
@@ -944,7 +945,7 @@ async function rejectUser(userId) {
         }
 
         function renderPagination() {
-            const totalPages = Math.ceil(displayData.length / WORDS_PER_PAGE);
+            const totalPages = Math.ceil(displayData.length / pageSize());
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
 
