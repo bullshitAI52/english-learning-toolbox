@@ -1168,3 +1168,16 @@
 .sec-head { cursor: pointer; user-select: none; }
 .sec-tri { display: inline-block; width: 18px; color: #58CC02; font-size: 13px; }
 .unit-toggle { cursor: pointer; user-select: none; }
+
+/* ===== 词性徽章 ===== */
+.pos-badge { display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 999px; color: #fff; font-size: 11px; font-weight: 700; vertical-align: middle; letter-spacing: .5px; }
+.pos-n { background: #1CB0F6; }
+.pos-v { background: #58CC02; }
+.pos-adj { background: #FF8A00; }
+.pos-adv { background: #A259E6; }
+.pos-pron { background: #FF4B8A; }
+.pos-prep { background: #26A69A; }
+.pos-num { background: #EF5350; }
+.pos-conj { background: #78909C; }
+.pos-phr { background: #607D8B; }
+.pos-modal { background: #AB47BC; }
