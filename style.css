@@ -1134,3 +1134,6 @@
 .rev-opt.rev-ok { background: #d7ffb8; border-color: #58CC02; }
 .rev-opt.rev-bad { background: #ffdfe0; border-color: #FF4B4B; opacity: .7; }
 .rev-feedback { margin-top: 8px; font-weight: 700; min-height: 20px; }
+
+.part-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 14px; font-weight: 700; }
+.part-row:empty { display: none; }

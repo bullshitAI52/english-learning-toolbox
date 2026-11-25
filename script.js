@@ -1177,12 +1177,7 @@ async function rejectUser(userId) {
         }
 
             // --- Built-in textbook word lists (PEP) ---
-    var TEXTBOOK_BOOKS = {
-        'g5a': { title: "PEP 五年级上册", units: [{ name: "Unit 1", start: 2, end: 11, csv: "old,老的；年纪大的\nyoung,年轻的；岁数不大的\nfunny,滑稽的；可笑的\nkind,体贴的；慈祥的；宽容的\nstrict,要求严格的；严厉的\npolite,有礼貌的；客气的\nhard-working,工作努力的；辛勤的\nhelpful,有用的；愿意帮忙的\nclever,聪明的；聪颖的\nshy,羞怯的；腼腆的\nknow,知道；了解\nour,我们的\nMs,女士\nwill,将要；会\nsometimes,有时；间或\nrobot,机器人\nhim,他（宾格）\nspeak,会说；会讲（语言）\nfinish,完成；做完" }, { name: "Unit 2", start: 12, end: 21, csv: "Monday,星期一\nTuesday,星期二\nWednesday,星期三\nThursday,星期四\nFriday,星期五\nSaturday,星期六\nSunday,星期日\nweekend,周末\nwash,洗\nwash my clothes,洗我的衣服\nwatch,看\nwatch TV,看电视\ndo,做；干\ndo homework,做作业\nread,看；读\nread books,看书\nplay,踢；玩；参加（体育运动）\nplay football,踢足球\ncooking,烹饪；烹调\noften,时常；常常\npark,公园\ntired,疲倦的；累的\nsport,体育运动\nplay sports,做体育运动\nshould,应该；应当\nevery,每一个；每个\nday,一天；一日\nschedule,工作计划；日程安排" }, { name: "Unit 3", start: 22, end: 35, csv: "sandwich,三明治\nsalad,蔬菜沙拉；混合沙拉\nhamburger,汉堡包\nice cream,冰淇淋\ntea,茶；茶水\nfresh,新鲜的；刚摘的\nhealthy,健康的\ndelicious,美味的；可口的\nhot,辣的；辛辣的\nsweet,含糖的；甜的\ndrink,喝；饮\nthirsty,渴的；口渴的\nfavourite,特别喜爱的\nfood,食物\ndear,亲爱的\nonion,洋葱；葱头" }, { name: "Unit 4", start: 36, end: 45, csv: "sing,唱；唱歌\nsong,歌曲\nsing English songs,唱英文歌曲\nplay the pipa,弹琵琶\nkung fu,功夫；武术\ndo kung fu,练功夫\ndance,跳舞\ndraw,画\ncartoon,漫画\ndraw cartoons,画漫画\ncook,烹调；烹饪\nswim,游泳\nplay basketball,打篮球\nping-pong,乒乓球\nplay ping-pong,打乒乓球\nspeak English,说英语\nwe'll,我们将\nparty,聚会；派对\nnext,下一个的；接下来的\nwonderful,极好的；了不起的\nlearn,学；学习；学会\nany,任何的；任一的\nproblem,问题\nno problem,没问题\nwant,要；想要\nsend,邮寄；发送\nemail,电子邮件\nat,（后面接邮件地址）" }, { name: "Unit 5", start: 46, end: 55, csv: "clock,时钟；钟\nplant,植物\nbottle,瓶子\nwater bottle,水瓶\nbike,自行车；脚踏车\nphoto,照片；相片\nfront,正面\nin front of,在……前面\nbetween,在……中间\nabove,在（或向）……上面\nbeside,在旁边（附近）\nbehind,在（或向）……后面\nthere,（表示存在或发生）\ngrandfather,祖父；外祖父\ntheir,他（她，它）们的\nhouse,房屋；房子；住宅\nlot,大量；许多\nlots of,大量；许多\nflower,花；花朵\nmove,搬家\ndirty,肮脏的\neverywhere,处处；到处\nmouse,老鼠\nlive,住；居住\nnature,自然界；大自然" }, { name: "Unit 6", start: 56, end: 65, csv: "forest,森林；林区\nriver,河；江\nlake,湖；湖泊\nmountain,高山；山岳\nhill,山丘；小山\ntree,树；树木；乔木\nbridge,桥\nbuilding,建筑物；房子；楼房\nvillage,村庄；村镇\nhouse,房屋；房子；住宅\nboating,划船\ngo boating,去划船\naren't,不是（are not）\nrabbit,兔；野兔\nhigh,高的" }] },
-        'g5b': { title: "PEP 五年级下册", units: [{ name: "Unit 1", start: 2, end: 11, csv: "eat breakfast,吃早饭\nhave...class,上……课\nplay sports,进行体育运动\nexercise,活动；运动\ndo morning exercises,做早操\neat dinner,吃晚饭\nclean my room,打扫我的房间\ngo for a walk,散步\ngo shopping,去买东西；购物\ntake,学习；上（课）\ndancing,跳舞；舞蹈\ntake a dancing class,上舞蹈课\nwhen,什么时候；何时\nafter,在（时间）后\nstart,开始\nusually,通常地；惯常地\nSpain,西班牙\nlate,晚；迟\na.m.,午前；上午\np.m.,午后；下午\nwhy,为什么\nshop,去买东西；购物\nwork,工作\nlast,上一个的；刚过去的\nsound,听起来好像\nalso,还；也\nbusy,忙的\nneed,需要\nplay,戏剧；剧本\nletter,信\nlive,居住\nisland,岛\nalways,总是；一直\ncave,山洞；洞穴\ngo swimming,去游泳\nwin,获胜" }, { name: "Unit 2", start: 12, end: 21, csv: "spring,春天\nsummer,夏天\nautumn,秋天\nwinter,冬天\nseason,季节\npicnic,野餐\ngo on a picnic,去野餐\npick,摘；采集\npick apples,摘苹果\nsnowman,雪人\nmake a snowman,堆雪人\ngo swimming,去游泳\nwhich,哪一个\nbest,最；极\nsnow,雪\ngood job,做得好\nbecause,因为\nvacation,假期\nall,完全；全部\npink,粉色\nlovely,可爱的\nleaf,叶子\nfall,落下；跌落\npaint,绘画" }, { name: "Unit 3", start: 22, end: 35, csv: "January,一月\nFebruary,二月\nMarch,三月\nApril,四月\nMay,五月\nJune,六月\nJuly,七月\nAugust,八月\nSeptember,九月\nOctober,十月\nNovember,十一月\nDecember,十二月\nfew,不多；很少\na few,一些\nthing,事情\nmeet,集会；会面\nsports meet,运动会\nEaster,复活节\ntrip,旅行\nyear,年\nplant,种植\ncontest,比赛；竞赛\nthe Great Wall,长城\nnational,国家的\nNational Day,国庆日\nAmerican,美国的\nThanksgiving,感恩节\nChristmas,圣诞节\nholiday,假日；节日\ngame,游戏\nroll,滚动\nlook for,寻找\nchocolate,巧克力\nbunny,兔子\nRSVP,请赐复\nby,在……之前" }, { name: "Unit 4", start: 36, end: 45, csv: "first,第一（的）\nsecond,第二（的）\nthird,第三（的）\nfourth,第四（的）\nfifth,第五（的）\ntwelfth,第十二（的）\ntwentieth,第二十（的）\ntwenty-first,第二十一（的）\ntwenty-third,第二十三（的）\nthirtieth,第三十（的）\nspecial,特殊的；特别的\nfool,蠢人；傻瓜\nkitten,小猫\ndiary,日记\nstill,仍然\nnoise,噪音\nfur,动物皮毛\nopen,开着的\nwalk,行走" }, { name: "Unit 5", start: 46, end: 55, csv: "mine,我的\nyours,你（们）的\nhis,他的\nhers,她的\ntheirs,他（她，它）们的\nours,我们的\nclimbing,（正在）攀登；攀爬\neating,（正在）吃\nplaying,（正在）玩耍\njumping,（正在）跳\ndrinking,（正在）喝\nsleeping,（正在）睡觉\neach,每个；各个\nother,其他\neach other,互相\nexcited,兴奋的\nlike,像……那样" }, { name: "Unit 6", start: 56, end: 65, csv: "doing morning exercises,（正在）做早操\nhaving...class,（正在）上……课\neating lunch,（正在）吃午饭\nreading a book,（正在）看书\nlistening to music,（正在）听音乐\nkeep,保持\nkeep to the right,靠右\nkeep your desk clean,保持你的课桌干净\ntalk quietly,小声讲话\nturn,顺序\ntake turns,按顺序来\nbamboo,竹子\nits,它的\nshow,展示；给……看\nanything,任何事物\nelse,另外；其他\nexhibition,展览\nsay,说；讲\nhave a look,看一看\nsushi,寿司\nteach,教\nsure,当然\nCanadian,加拿大的\nSpanish,西班牙的" }] },
-        'g6a': { title: "PEP 六年级上册", units: [{ name: "Unit 1", start: 2, end: 11, csv: "science,科学\nmuseum,博物馆\npost office,邮局\nbookstore,书店\ncinema,电影院\nhospital,医院\ncrossing,十字路口\nturn,转弯\nleft,左\nstraight,笔直地\nright,右\nask,问\nsir,先生\ninteresting,有趣的\nItalian,意大利的\nrestaurant,餐馆\npizza,比萨饼\nstreet,大街；街道\nget,到达\nBDS,北斗卫星导航系统\ngave,提供；交给\nfeature,特点\nfollow,跟着\nfar,远的\ntell,告诉" }, { name: "Unit 2", start: 12, end: 21, csv: "on foot,步行\nby,乘\nbus,公共汽车\nplane,飞机\ntaxi,出租汽车\nship,（大）船\nsubway,地铁\ntrain,火车\nslow,慢的\ndown,减少；降低\nslow down,慢下来\nstop,停下\nMrs,夫人\nearly,早到的\nhelmet,头盔\nmust,必须\nwear,穿；戴\nattention,注意\npay attention to,注意\ntraffic,交通\ntraffic lights,交通信号灯\nMunich,慕尼黑\nGermany,德国\nAlaska,阿拉斯加州\nsled,雪橇\nfast,快\nferry,轮渡\nPapa Westray,帕帕韦斯特雷岛\nScotland,苏格兰" }, { name: "Unit 3", start: 22, end: 35, csv: "visit,拜访\nfilm,电影\nsee a film,看电影\ntrip,旅行\ntake a trip,去旅行\nsupermarket,超市\nevening,晚上；傍晚\ntonight,在今晚\ntomorrow,明天\nnext week,下周\ndictionary,词典\ncomic,滑稽的\ncomic book,连环画册\nword,单词\nword book,单词书\npostcard,明信片\nlesson,课\nspace,太空\ntravel,（尤指长途）旅行\nhalf,一半\nprice,价格\nMid-Autumn Festival,中秋节\ntogether,一起\nget together,聚会\nmooncake,月饼\npoem,诗\nmoon,月亮" }, { name: "Unit 4", start: 36, end: 45, csv: "studies,学习\npuzzle,谜\nhiking,远足\npen pal,笔友\nhobby,业余爱好\njasmine,茉莉\nidea,想法；主意\nCanberra,堪培拉\namazing,令人惊奇的\nshall,表示征求意见\ngoal,射门\njoin,加入\nclub,俱乐部\nshare,分享" }, { name: "Unit 5", start: 46, end: 55, csv: "factory,工厂\nworker,工人\npostman,邮递员\nbusinessman,商人；企业家\npolice officer,警察\nfisherman,渔民\nscientist,科学家\npilot,飞行员\ncoach,教练\ncountry,国家\nhead teacher,校长\nsea,大海\nstay,保持\nuniversity,大学\ngym,体育馆\nif,如果\nreporter,记者\nuse,使用\ntype,打字\nquickly,迅速地\nsecretary,秘书" }, { name: "Unit 6", start: 56, end: 65, csv: "angry,生气的\nafraid,害怕\nsad,难过的\nworried,担心的；发愁的\nhappy,高兴的\nsee a doctor,看病\nwear,穿\nmore,更多的\ndeep,深的\nbreath,呼吸\ntake a deep breath,深深吸一口气\ncount,数数\ncount to ten,数到十\nchase,追赶\nmice,老鼠（mouse的复数）\nbad,邪恶的；坏的\nhurt,（使）受伤\nill,有病；不舒服\nwrong,有毛病\nshould,应该\nfeel,觉得；感到\nwell,健康；身体好\nsit,坐\ngrass,草坪\nhear,听见\nant,蚂蚁\nworry,担心；担忧\nstuck,陷住；无法移动\nmud,泥\npull,拉；拽\neveryone,每人" }] },
-        'g6b': { title: "PEP 六年级下册", units: [{ name: "Unit 1", start: 2, end: 11, csv: "younger,更年轻的\nolder,更年长的\ntaller,更高的\nshorter,更矮的；更短的\nlonger,更长的\nthinner,更瘦的\nheavier,更重的\nbigger,更大的\nsmaller,更小的\nstronger,更强壮的\ndinosaur,恐龙\nhall,大厅\nmetre,米\nthan,比\nboth,两个都\nkilogram,千克；公斤\ncountryside,乡村\nlower,更低地\nshadow,阴影；影子\nsmarter,更聪明的\nbecome,开始变得；变成" }, { name: "Unit 2", start: 12, end: 21, csv: "cleaned,打扫\nstayed,停留；待\nwashed,洗\nwatched,看\nhad,患病；得病\nhad a cold,感冒\nslept,睡觉\nread,读\nsaw,看见\nlast,最近的；上一个的\nyesterday,昨天\nbefore,在……之前\ndrank,喝\nshow,演出\nmagazine,杂志\nbetter,更好的\nfaster,更快的\nhotel,旅馆\nfixed,修理\nbroken,破损的\nlamp,台灯\nloud,喧闹的；大声的\nenjoy,享受……乐趣；喜爱\nstay,暂住；逗留" }, { name: "Unit 3", start: 22, end: 31, csv: "went,去\ncamp,野营\nwent camping,野营\nfish,钓鱼；捕鱼\nwent fishing,去钓鱼\nrode,骑（马；自行车）\nhurt,（使）受伤\nate,吃\ntook,拍照\ntook pictures,照相\nbought,买\ngift,礼物\nfell,摔倒\noff,从（某处）落下\nLabour Day,劳动节\nmule,骡子\nTurpan,吐鲁番\ncould,能\ntill,直到\nbeach,海滩；沙滩\nbasket,篮；筐\npart,角色\nlicked,舔\nlaughed,笑" }, { name: "Unit 4", start: 32, end: 41, csv: "dining hall,饭厅\ngrass,草坪\ngym,体育馆\nago,以前\ncycling,骑自行车运动\ngo cycling,去骑自行车\nice-skate,滑冰\nbadminton,羽毛球运动\nstar,星\neasy,容易的\nlook up,查阅\nInternet,互联网\ndifferent,不同的\nactive,积极的；活跃的\nrace,赛跑\nnothing,没有什么\nthought,想\nfelt,感觉\ncheetah,猎豹\ntrip,绊倒\nwoke,醒\ndream,梦" }] }
-    };
+    var TEXTBOOK_BOOKS = {"g5a": {"title": "PEP 五年级上册", "units": [{"name": "Unit 1", "start": 2, "end": 11, "csv": "old,老的；年纪大的\nyoung,年轻的；岁数不大的\nfunny,滑稽的；可笑的\nkind,体贴的；慈祥的；宽容的\nstrict,要求严格的；严厉的\npolite,有礼貌的；客气的\nhard-working,工作努力的；辛勤的\nhelpful,有用的；愿意帮忙的\nclever,聪明的；聪颖的\nshy,羞怯的；腼腆的\nknow,知道；了解\nour,我们的\nMs,女士\nwill,将要；会\nsometimes,有时；间或\nrobot,机器人\nhim,他（宾格）\nspeak,会说；会讲（语言）\nfinish,完成；做完", "parts": [{"name": "Part A", "csv": "old,老的；年纪大的\nyoung,年轻的；岁数不大的\nfunny,滑稽的；可笑的\nkind,体贴的；慈祥的；宽容的\nstrict,要求严格的；严厉的\nknow,知道；了解\nour,我们的\nMs,女士\nwill,将要；会\nsometimes,有时；间或"}, {"name": "Part B", "csv": "polite,有礼貌的；客气的\nhard-working,工作努力的；辛勤的\nhelpful,有用的；愿意帮忙的\nclever,聪明的；聪颖的\nshy,羞怯的；腼腆的\nrobot,机器人\nhim,他（宾格）\nspeak,会说；会讲（语言）\nfinish,完成；做完"}]}, {"name": "Unit 2", "start": 12, "end": 21, "csv": "Monday,星期一\nTuesday,星期二\nWednesday,星期三\nThursday,星期四\nFriday,星期五\nSaturday,星期六\nSunday,星期日\nweekend,周末\nwash,洗\nwash my clothes,洗我的衣服\nwatch,看\nwatch TV,看电视\ndo,做；干\ndo homework,做作业\nread,看；读\nread books,看书\nplay,踢；玩；参加（体育运动）\nplay football,踢足球\ncooking,烹饪；烹调\noften,时常；常常\npark,公园\ntired,疲倦的；累的\nsport,体育运动\nplay sports,做体育运动\nshould,应该；应当\nevery,每一个；每个\nday,一天；一日\nschedule,工作计划；日程安排", "parts": [{"name": "Part A", "csv": "Monday,星期一\nWednesday,星期三\nThursday,星期四\nFriday,星期五\nweekend,周末\ndo,做；干\nread,看；读\nplay,踢；玩；参加（体育运动）\ncooking,烹饪；烹调\noften,时常；常常\nschedule,工作计划；日程安排"}, {"name": "Part B", "csv": "Tuesday,星期二\nSaturday,星期六\nSunday,星期日\nwash,洗\nwash my clothes,洗我的衣服\nwatch,看\nwatch TV,看电视\ndo homework,做作业\nread books,看书\nplay football,踢足球\npark,公园\ntired,疲倦的；累的\nsport,体育运动\nplay sports,做体育运动\nshould,应该；应当\nevery,每一个；每个\nday,一天；一日"}]}, {"name": "Unit 3", "start": 22, "end": 35, "csv": "sandwich,三明治\nsalad,蔬菜沙拉；混合沙拉\nhamburger,汉堡包\nice cream,冰淇淋\ntea,茶；茶水\nfresh,新鲜的；刚摘的\nhealthy,健康的\ndelicious,美味的；可口的\nhot,辣的；辛辣的\nsweet,含糖的；甜的\ndrink,喝；饮\nthirsty,渴的；口渴的\nfavourite,特别喜爱的\nfood,食物\ndear,亲爱的\nonion,洋葱；葱头", "parts": [{"name": "Part A", "csv": "sandwich,三明治\nsalad,蔬菜沙拉；混合沙拉\nhamburger,汉堡包\nice cream,冰淇淋\ntea,茶；茶水\nhealthy,健康的\nhot,辣的；辛辣的\nsweet,含糖的；甜的\ndrink,喝；饮\nthirsty,渴的；口渴的\nfood,食物"}, {"name": "Part B", "csv": "fresh,新鲜的；刚摘的\ndelicious,美味的；可口的\nfavourite,特别喜爱的\ndear,亲爱的\nonion,洋葱；葱头"}]}, {"name": "Unit 4", "start": 36, "end": 45, "csv": "sing,唱；唱歌\nsong,歌曲\nsing English songs,唱英文歌曲\nplay the pipa,弹琵琶\nkung fu,功夫；武术\ndo kung fu,练功夫\ndance,跳舞\ndraw,画\ncartoon,漫画\ndraw cartoons,画漫画\ncook,烹调；烹饪\nswim,游泳\nplay basketball,打篮球\nping-pong,乒乓球\nplay ping-pong,打乒乓球\nspeak English,说英语\nwe'll,我们将\nparty,聚会；派对\nnext,下一个的；接下来的\nwonderful,极好的；了不起的\nlearn,学；学习；学会\nany,任何的；任一的\nproblem,问题\nno problem,没问题\nwant,要；想要\nsend,邮寄；发送\nemail,电子邮件\nat,（后面接邮件地址）", "parts": [{"name": "Part A", "csv": "sing,唱；唱歌\nsing English songs,唱英文歌曲\nplay the pipa,弹琵琶\nkung fu,功夫；武术\ndo kung fu,练功夫\ndance,跳舞\ndraw,画\ncartoon,漫画\ndraw cartoons,画漫画\ncook,烹调；烹饪\nping-pong,乒乓球\nplay ping-pong,打乒乓球\nwe'll,我们将\nparty,聚会；派对\nnext,下一个的；接下来的\nwonderful,极好的；了不起的\nlearn,学；学习；学会\nat,（后面接邮件地址）"}, {"name": "Part B", "csv": "song,歌曲\nswim,游泳\nplay basketball,打篮球\nspeak English,说英语\nany,任何的；任一的\nproblem,问题\nno problem,没问题\nwant,要；想要\nsend,邮寄；发送\nemail,电子邮件"}]}, {"name": "Unit 5", "start": 46, "end": 55, "csv": "clock,时钟；钟\nplant,植物\nbottle,瓶子\nwater bottle,水瓶\nbike,自行车；脚踏车\nphoto,照片；相片\nfront,正面\nin front of,在……前面\nbetween,在……中间\nabove,在（或向）……上面\nbeside,在旁边（附近）\nbehind,在（或向）……后面\nthere,（表示存在或发生）\ngrandfather,祖父；外祖父\ntheir,他（她，它）们的\nhouse,房屋；房子；住宅\nlot,大量；许多\nlots of,大量；许多\nflower,花；花朵\nmove,搬家\ndirty,肮脏的\neverywhere,处处；到处\nmouse,老鼠\nlive,住；居住\nnature,自然界；大自然", "parts": [{"name": "Part A", "csv": "clock,时钟；钟\nplant,植物\nbottle,瓶子\nwater bottle,水瓶\nbike,自行车；脚踏车\nphoto,照片；相片\nabove,在（或向）……上面\nbeside,在旁边（附近）\nthere,（表示存在或发生）"}, {"name": "Part B", "csv": "front,正面\nin front of,在……前面\nbetween,在……中间\nbehind,在（或向）……后面\ngrandfather,祖父；外祖父\ntheir,他（她，它）们的\nhouse,房屋；房子；住宅\nlot,大量；许多\nlots of,大量；许多\nflower,花；花朵\nmove,搬家\ndirty,肮脏的\neverywhere,处处；到处\nmouse,老鼠\nlive,住；居住\nnature,自然界；大自然"}]}, {"name": "Unit 6", "start": 56, "end": 65, "csv": "forest,森林；林区\nriver,河；江\nlake,湖；湖泊\nmountain,高山；山岳\nhill,山丘；小山\ntree,树；树木；乔木\nbridge,桥\nbuilding,建筑物；房子；楼房\nvillage,村庄；村镇\nhouse,房屋；房子；住宅\nboating,划船\ngo boating,去划船\naren't,不是（are not）\nrabbit,兔；野兔\nhigh,高的", "parts": [{"name": "Part A", "csv": "forest,森林；林区\nriver,河；江\nlake,湖；湖泊\nmountain,高山；山岳\nhill,山丘；小山\nhouse,房屋；房子；住宅\nboating,划船\ngo boating,去划船"}, {"name": "Part B", "csv": "tree,树；树木；乔木\nbridge,桥\nbuilding,建筑物；房子；楼房\nvillage,村庄；村镇\naren't,不是（are not）\nrabbit,兔；野兔\nhigh,高的"}]}]}, "g5b": {"title": "PEP 五年级下册", "units": [{"name": "Unit 1", "start": 2, "end": 11, "csv": "eat breakfast,吃早饭\nhave...class,上……课\nplay sports,进行体育运动\nexercise,活动；运动\ndo morning exercises,做早操\neat dinner,吃晚饭\nclean my room,打扫我的房间\ngo for a walk,散步\ngo shopping,去买东西；购物\ntake,学习；上（课）\ndancing,跳舞；舞蹈\ntake a dancing class,上舞蹈课\nwhen,什么时候；何时\nafter,在（时间）后\nstart,开始\nusually,通常地；惯常地\nSpain,西班牙\nlate,晚；迟\na.m.,午前；上午\np.m.,午后；下午\nwhy,为什么\nshop,去买东西；购物\nwork,工作\nlast,上一个的；刚过去的\nsound,听起来好像\nalso,还；也\nbusy,忙的\nneed,需要\nplay,戏剧；剧本\nletter,信\nlive,居住\nisland,岛\nalways,总是；一直\ncave,山洞；洞穴\ngo swimming,去游泳\nwin,获胜", "parts": [{"name": "Part A", "csv": "eat breakfast,吃早饭\nhave...class,上……课\nplay sports,进行体育运动\nexercise,活动；运动\ndo morning exercises,做早操\neat dinner,吃晚饭\nclean my room,打扫我的房间\ngo shopping,去买东西；购物\nwhen,什么时候；何时\nafter,在（时间）后\nstart,开始\nusually,通常地；惯常地\nSpain,西班牙\nlate,晚；迟\na.m.,午前；上午\nshop,去买东西；购物\nwork,工作\nplay,戏剧；剧本"}, {"name": "Part B", "csv": "go for a walk,散步\ntake,学习；上（课）\ndancing,跳舞；舞蹈\ntake a dancing class,上舞蹈课\np.m.,午后；下午\nwhy,为什么\nlast,上一个的；刚过去的\nsound,听起来好像\nalso,还；也\nbusy,忙的\nneed,需要\nletter,信\nlive,居住\nisland,岛\nalways,总是；一直\ncave,山洞；洞穴\ngo swimming,去游泳\nwin,获胜"}]}, {"name": "Unit 2", "start": 12, "end": 21, "csv": "spring,春天\nsummer,夏天\nautumn,秋天\nwinter,冬天\nseason,季节\npicnic,野餐\ngo on a picnic,去野餐\npick,摘；采集\npick apples,摘苹果\nsnowman,雪人\nmake a snowman,堆雪人\ngo swimming,去游泳\nwhich,哪一个\nbest,最；极\nsnow,雪\ngood job,做得好\nbecause,因为\nvacation,假期\nall,完全；全部\npink,粉色\nlovely,可爱的\nleaf,叶子\nfall,落下；跌落\npaint,绘画", "parts": [{"name": "Part A", "csv": "spring,春天\nsummer,夏天\nautumn,秋天\nwinter,冬天\nseason,季节\ngo swimming,去游泳\nwhich,哪一个\nbest,最；极\nbecause,因为"}, {"name": "Part B", "csv": "picnic,野餐\ngo on a picnic,去野餐\npick,摘；采集\npick apples,摘苹果\nsnowman,雪人\nmake a snowman,堆雪人\nsnow,雪\ngood job,做得好\nvacation,假期\nall,完全；全部\npink,粉色\nlovely,可爱的\nleaf,叶子\nfall,落下；跌落\npaint,绘画"}]}, {"name": "Unit 3", "start": 22, "end": 35, "csv": "January,一月\nFebruary,二月\nMarch,三月\nApril,四月\nMay,五月\nJune,六月\nJuly,七月\nAugust,八月\nSeptember,九月\nOctober,十月\nNovember,十一月\nDecember,十二月\nfew,不多；很少\na few,一些\nthing,事情\nmeet,集会；会面\nsports meet,运动会\nEaster,复活节\ntrip,旅行\nyear,年\nplant,种植\ncontest,比赛；竞赛\nthe Great Wall,长城\nnational,国家的\nNational Day,国庆日\nAmerican,美国的\nThanksgiving,感恩节\nChristmas,圣诞节\nholiday,假日；节日\ngame,游戏\nroll,滚动\nlook for,寻找\nchocolate,巧克力\nbunny,兔子\nRSVP,请赐复\nby,在……之前", "parts": [{"name": "Part A", "csv": "January,一月\nFebruary,二月\nMarch,三月\nApril,四月\nMay,五月\nJuly,七月\nAugust,八月\nfew,不多；很少\na few,一些\nthing,事情\nmeet,集会；会面\nsports meet,运动会\ntrip,旅行\nyear,年\nplant,种植\ncontest,比赛；竞赛"}, {"name": "Part B", "csv": "June,六月\nSeptember,九月\nOctober,十月\nNovember,十一月\nDecember,十二月\nEaster,复活节\nthe Great Wall,长城\nnational,国家的\nNational Day,国庆日\nAmerican,美国的\nThanksgiving,感恩节\nChristmas,圣诞节\nholiday,假日；节日\ngame,游戏\nroll,滚动\nlook for,寻找\nchocolate,巧克力\nbunny,兔子\nRSVP,请赐复\nby,在……之前"}]}, {"name": "Unit 4", "start": 36, "end": 45, "csv": "first,第一（的）\nsecond,第二（的）\nthird,第三（的）\nfourth,第四（的）\nfifth,第五（的）\ntwelfth,第十二（的）\ntwentieth,第二十（的）\ntwenty-first,第二十一（的）\ntwenty-third,第二十三（的）\nthirtieth,第三十（的）\nspecial,特殊的；特别的\nfool,蠢人；傻瓜\nkitten,小猫\ndiary,日记\nstill,仍然\nnoise,噪音\nfur,动物皮毛\nopen,开着的\nwalk,行走", "parts": [{"name": "Part A", "csv": "third,第三（的）\nfourth,第四（的）\nfifth,第五（的）\nspecial,特殊的；特别的"}, {"name": "Part B", "csv": "first,第一（的）\nsecond,第二（的）\ntwelfth,第十二（的）\ntwentieth,第二十（的）\ntwenty-first,第二十一（的）\ntwenty-third,第二十三（的）\nthirtieth,第三十（的）\nfool,蠢人；傻瓜\nkitten,小猫\ndiary,日记\nstill,仍然\nnoise,噪音\nfur,动物皮毛\nopen,开着的\nwalk,行走"}]}, {"name": "Unit 5", "start": 46, "end": 55, "csv": "mine,我的\nyours,你（们）的\nhis,他的\nhers,她的\ntheirs,他（她，它）们的\nours,我们的\nclimbing,（正在）攀登；攀爬\neating,（正在）吃\nplaying,（正在）玩耍\njumping,（正在）跳\ndrinking,（正在）喝\nsleeping,（正在）睡觉\neach,每个；各个\nother,其他\neach other,互相\nexcited,兴奋的\nlike,像……那样", "parts": [{"name": "Part A", "csv": "mine,我的\nyours,你（们）的\nhis,他的\nhers,她的\ntheirs,他（她，它）们的\nours,我们的\neating,（正在）吃\nplaying,（正在）玩耍\njumping,（正在）跳"}, {"name": "Part B", "csv": "climbing,（正在）攀登；攀爬\ndrinking,（正在）喝\nsleeping,（正在）睡觉\neach,每个；各个\nother,其他\neach other,互相\nexcited,兴奋的\nlike,像……那样"}]}, {"name": "Unit 6", "start": 56, "end": 65, "csv": "doing morning exercises,（正在）做早操\nhaving...class,（正在）上……课\neating lunch,（正在）吃午饭\nreading a book,（正在）看书\nlistening to music,（正在）听音乐\nkeep,保持\nkeep to the right,靠右\nkeep your desk clean,保持你的课桌干净\ntalk quietly,小声讲话\nturn,顺序\ntake turns,按顺序来\nbamboo,竹子\nits,它的\nshow,展示；给……看\nanything,任何事物\nelse,另外；其他\nexhibition,展览\nsay,说；讲\nhave a look,看一看\nsushi,寿司\nteach,教\nsure,当然\nCanadian,加拿大的\nSpanish,西班牙的", "parts": [{"name": "Part A", "csv": "doing morning exercises,（正在）做早操\nhaving...class,（正在）上……课\neating lunch,（正在）吃午饭\nreading a book,（正在）看书\nlistening to music,（正在）听音乐\nkeep,保持\nkeep to the right,靠右\nbamboo,竹子\nits,它的\nsay,说；讲"}, {"name": "Part B", "csv": "keep your desk clean,保持你的课桌干净\ntalk quietly,小声讲话\nturn,顺序\ntake turns,按顺序来\nshow,展示；给……看\nanything,任何事物\nelse,另外；其他\nexhibition,展览\nhave a look,看一看\nsushi,寿司\nteach,教\nsure,当然\nCanadian,加拿大的\nSpanish,西班牙的"}]}]}, "g6a": {"title": "PEP 六年级上册", "units": [{"name": "Unit 1", "start": 2, "end": 11, "csv": "science,科学\nmuseum,博物馆\npost office,邮局\nbookstore,书店\ncinema,电影院\nhospital,医院\ncrossing,十字路口\nturn,转弯\nleft,左\nstraight,笔直地\nright,右\nask,问\nsir,先生\ninteresting,有趣的\nItalian,意大利的\nrestaurant,餐馆\npizza,比萨饼\nstreet,大街；街道\nget,到达\nBDS,北斗卫星导航系统\ngave,提供；交给\nfeature,特点\nfollow,跟着\nfar,远的\ntell,告诉", "parts": [{"name": "Part A", "csv": "science,科学\nmuseum,博物馆\npost office,邮局\nbookstore,书店\ncinema,电影院\nhospital,医院\nask,问\nsir,先生\nget,到达"}, {"name": "Part B", "csv": "crossing,十字路口\nturn,转弯\nleft,左\nstraight,笔直地\nright,右\ninteresting,有趣的\nItalian,意大利的\nrestaurant,餐馆\npizza,比萨饼\nstreet,大街；街道\nBDS,北斗卫星导航系统\ngave,提供；交给\nfeature,特点\nfollow,跟着\nfar,远的\ntell,告诉"}]}, {"name": "Unit 2", "start": 12, "end": 21, "csv": "on foot,步行\nby,乘\nbus,公共汽车\nplane,飞机\ntaxi,出租汽车\nship,（大）船\nsubway,地铁\ntrain,火车\nslow,慢的\ndown,减少；降低\nslow down,慢下来\nstop,停下\nMrs,夫人\nearly,早到的\nhelmet,头盔\nmust,必须\nwear,穿；戴\nattention,注意\npay attention to,注意\ntraffic,交通\ntraffic lights,交通信号灯\nMunich,慕尼黑\nGermany,德国\nAlaska,阿拉斯加州\nsled,雪橇\nfast,快\nferry,轮渡\nPapa Westray,帕帕韦斯特雷岛\nScotland,苏格兰", "parts": [{"name": "Part A", "csv": "on foot,步行\nby,乘\nbus,公共汽车\nplane,飞机\ntaxi,出租汽车\nship,（大）船\nsubway,地铁\ntrain,火车\nMrs,夫人\nearly,早到的"}, {"name": "Part B", "csv": "slow,慢的\ndown,减少；降低\nslow down,慢下来\nstop,停下\nhelmet,头盔\nmust,必须\nwear,穿；戴\nattention,注意\npay attention to,注意\ntraffic,交通\ntraffic lights,交通信号灯\nMunich,慕尼黑\nGermany,德国\nAlaska,阿拉斯加州\nsled,雪橇\nfast,快\nferry,轮渡\nPapa Westray,帕帕韦斯特雷岛\nScotland,苏格兰"}]}, {"name": "Unit 3", "start": 22, "end": 35, "csv": "visit,拜访\nfilm,电影\nsee a film,看电影\ntrip,旅行\ntake a trip,去旅行\nsupermarket,超市\nevening,晚上；傍晚\ntonight,在今晚\ntomorrow,明天\nnext week,下周\ndictionary,词典\ncomic,滑稽的\ncomic book,连环画册\nword,单词\nword book,单词书\npostcard,明信片\nlesson,课\nspace,太空\ntravel,（尤指长途）旅行\nhalf,一半\nprice,价格\nMid-Autumn Festival,中秋节\ntogether,一起\nget together,聚会\nmooncake,月饼\npoem,诗\nmoon,月亮", "parts": [{"name": "Part A", "csv": "visit,拜访\nfilm,电影\nsee a film,看电影\ntrip,旅行\ntake a trip,去旅行\nsupermarket,超市\nevening,晚上；傍晚\ntonight,在今晚\ntomorrow,明天\nnext week,下周\ncomic,滑稽的\ncomic book,连环画册\nlesson,课"}, {"name": "Part B", "csv": "dictionary,词典\nword,单词\nword book,单词书\npostcard,明信片\nspace,太空\ntravel,（尤指长途）旅行\nhalf,一半\nprice,价格\nMid-Autumn Festival,中秋节\ntogether,一起\nget together,聚会\nmooncake,月饼\npoem,诗\nmoon,月亮"}]}, {"name": "Unit 4", "start": 36, "end": 45, "csv": "studies,学习\npuzzle,谜\nhiking,远足\npen pal,笔友\nhobby,业余爱好\njasmine,茉莉\nidea,想法；主意\nCanberra,堪培拉\namazing,令人惊奇的\nshall,表示征求意见\ngoal,射门\njoin,加入\nclub,俱乐部\nshare,分享", "parts": [{"name": "Part A", "csv": "pen pal,笔友\njasmine,茉莉\nidea,想法；主意"}, {"name": "Part B", "csv": "studies,学习\npuzzle,谜\nhiking,远足\nhobby,业余爱好\nCanberra,堪培拉\namazing,令人惊奇的\nshall,表示征求意见\ngoal,射门\njoin,加入\nclub,俱乐部\nshare,分享"}]}, {"name": "Unit 5", "start": 46, "end": 55, "csv": "factory,工厂\nworker,工人\npostman,邮递员\nbusinessman,商人；企业家\npolice officer,警察\nfisherman,渔民\nscientist,科学家\npilot,飞行员\ncoach,教练\ncountry,国家\nhead teacher,校长\nsea,大海\nstay,保持\nuniversity,大学\ngym,体育馆\nif,如果\nreporter,记者\nuse,使用\ntype,打字\nquickly,迅速地\nsecretary,秘书", "parts": [{"name": "Part A", "csv": "factory,工厂\nworker,工人\npostman,邮递员\nbusinessman,商人；企业家\npolice officer,警察\npilot,飞行员\nhead teacher,校长\nsea,大海"}, {"name": "Part B", "csv": "fisherman,渔民\nscientist,科学家\ncoach,教练\ncountry,国家\nstay,保持\nuniversity,大学\ngym,体育馆\nif,如果\nreporter,记者\nuse,使用\ntype,打字\nquickly,迅速地\nsecretary,秘书"}]}, {"name": "Unit 6", "start": 56, "end": 65, "csv": "angry,生气的\nafraid,害怕\nsad,难过的\nworried,担心的；发愁的\nhappy,高兴的\nsee a doctor,看病\nwear,穿\nmore,更多的\ndeep,深的\nbreath,呼吸\ntake a deep breath,深深吸一口气\ncount,数数\ncount to ten,数到十\nchase,追赶\nmice,老鼠（mouse的复数）\nbad,邪恶的；坏的\nhurt,（使）受伤\nill,有病；不舒服\nwrong,有毛病\nshould,应该\nfeel,觉得；感到\nwell,健康；身体好\nsit,坐\ngrass,草坪\nhear,听见\nant,蚂蚁\nworry,担心；担忧\nstuck,陷住；无法移动\nmud,泥\npull,拉；拽\neveryone,每人", "parts": [{"name": "Part A", "csv": "angry,生气的\nafraid,害怕\nsad,难过的\nworried,担心的；发愁的\nhappy,高兴的\nsee a doctor,看病\ndeep,深的\nbreath,呼吸\ncount,数数\ncount to ten,数到十\nmice,老鼠（mouse的复数）\nbad,邪恶的；坏的\nhurt,（使）受伤\nill,有病；不舒服\nshould,应该\nfeel,觉得；感到\nwell,健康；身体好"}, {"name": "Part B", "csv": "wear,穿\nmore,更多的\ntake a deep breath,深深吸一口气\nchase,追赶\nwrong,有毛病\nsit,坐\ngrass,草坪\nhear,听见\nant,蚂蚁\nworry,担心；担忧\nstuck,陷住；无法移动\nmud,泥\npull,拉；拽\neveryone,每人"}]}]}, "g6b": {"title": "PEP 六年级下册", "units": [{"name": "Unit 1", "start": 2, "end": 11, "csv": "younger,更年轻的\nolder,更年长的\ntaller,更高的\nshorter,更矮的；更短的\nlonger,更长的\nthinner,更瘦的\nheavier,更重的\nbigger,更大的\nsmaller,更小的\nstronger,更强壮的\ndinosaur,恐龙\nhall,大厅\nmetre,米\nthan,比\nboth,两个都\nkilogram,千克；公斤\ncountryside,乡村\nlower,更低地\nshadow,阴影；影子\nsmarter,更聪明的\nbecome,开始变得；变成", "parts": [{"name": "Part A", "csv": "younger,更年轻的\nolder,更年长的\ntaller,更高的\nshorter,更矮的；更短的\nlonger,更长的\ndinosaur,恐龙\nhall,大厅\nmetre,米\nthan,比\nboth,两个都"}, {"name": "Part B", "csv": "thinner,更瘦的\nheavier,更重的\nbigger,更大的\nsmaller,更小的\nstronger,更强壮的\nkilogram,千克；公斤\ncountryside,乡村\nlower,更低地\nshadow,阴影；影子\nsmarter,更聪明的\nbecome,开始变得；变成"}]}, {"name": "Unit 2", "start": 12, "end": 21, "csv": "cleaned,打扫\nstayed,停留；待\nwashed,洗\nwatched,看\nhad,患病；得病\nhad a cold,感冒\nslept,睡觉\nread,读\nsaw,看见\nlast,最近的；上一个的\nyesterday,昨天\nbefore,在……之前\ndrank,喝\nshow,演出\nmagazine,杂志\nbetter,更好的\nfaster,更快的\nhotel,旅馆\nfixed,修理\nbroken,破损的\nlamp,台灯\nloud,喧闹的；大声的\nenjoy,享受……乐趣；喜爱\nstay,暂住；逗留", "parts": [{"name": "Part A", "csv": "cleaned,打扫\nstayed,停留；待\nwashed,洗\nwatched,看\nlast,最近的；上一个的\ndrank,喝\nshow,演出"}, {"name": "Part B", "csv": "had,患病；得病\nhad a cold,感冒\nslept,睡觉\nread,读\nsaw,看见\nyesterday,昨天\nbefore,在……之前\nmagazine,杂志\nbetter,更好的\nfaster,更快的\nhotel,旅馆\nfixed,修理\nbroken,破损的\nlamp,台灯\nloud,喧闹的；大声的\nenjoy,享受……乐趣；喜爱\nstay,暂住；逗留"}]}, {"name": "Unit 3", "start": 22, "end": 31, "csv": "went,去\ncamp,野营\nwent camping,野营\nfish,钓鱼；捕鱼\nwent fishing,去钓鱼\nrode,骑（马；自行车）\nhurt,（使）受伤\nate,吃\ntook,拍照\ntook pictures,照相\nbought,买\ngift,礼物\nfell,摔倒\noff,从（某处）落下\nLabour Day,劳动节\nmule,骡子\nTurpan,吐鲁番\ncould,能\ntill,直到\nbeach,海滩；沙滩\nbasket,篮；筐\npart,角色\nlicked,舔\nlaughed,笑", "parts": [{"name": "Part A", "csv": "went,去\ncamp,野营\nwent camping,野营\nfish,钓鱼；捕鱼\nwent fishing,去钓鱼\nrode,骑（马；自行车）\nhurt,（使）受伤\nate,吃\nfell,摔倒\noff,从（某处）落下\nLabour Day,劳动节\nmule,骡子\nTurpan,吐鲁番\ntill,直到"}, {"name": "Part B", "csv": "took,拍照\ntook pictures,照相\nbought,买\ngift,礼物\ncould,能\nbeach,海滩；沙滩\nbasket,篮；筐\npart,角色\nlicked,舔\nlaughed,笑"}]}, {"name": "Unit 4", "start": 32, "end": 41, "csv": "dining hall,饭厅\ngrass,草坪\ngym,体育馆\nago,以前\ncycling,骑自行车运动\ngo cycling,去骑自行车\nice-skate,滑冰\nbadminton,羽毛球运动\nstar,星\neasy,容易的\nlook up,查阅\nInternet,互联网\ndifferent,不同的\nactive,积极的；活跃的\nrace,赛跑\nnothing,没有什么\nthought,想\nfelt,感觉\ncheetah,猎豹\ntrip,绊倒\nwoke,醒\ndream,梦", "parts": [{"name": "Part A", "csv": "dining hall,饭厅\ngrass,草坪\ngym,体育馆\nago,以前\nInternet,互联网"}, {"name": "Part B", "csv": "cycling,骑自行车运动\ngo cycling,去骑自行车\nice-skate,滑冰\nbadminton,羽毛球运动\nstar,星\neasy,容易的\nlook up,查阅\ndifferent,不同的\nactive,积极的；活跃的\nrace,赛跑\nnothing,没有什么\nthought,想\nfelt,感觉\ncheetah,猎豹\ntrip,绊倒\nwoke,醒\ndream,梦"}]}]}};
     // 教材分组：以后加初中时，只需在 TEXTBOOK_BOOKS 里加词表、再往这里加一组即可，界面自动生成按钮
     var TEXTBOOK_STAGES = [
         { stage: '小学', books: [ { key: 'g5a', short: '5上' }, { key: 'g5b', short: '5下' }, { key: 'g6a', short: '6上' }, { key: 'g6b', short: '6下' } ] }
@@ -1212,6 +1207,7 @@ async function rejectUser(userId) {
         var b = TEXTBOOK_BOOKS[key];
         if (!b) return;
         currentTextbook = key;
+        currentUnitIdx = null;
         renderUnitBar();
         parseCSVData(mergeUnitCSVs(b.units), b.title + '.csv');
     }
@@ -1220,6 +1216,8 @@ async function rejectUser(userId) {
         var b = TEXTBOOK_BOOKS[currentTextbook];
         var u = b.units[idx];
         if (!u) return;
+        currentUnitIdx = idx;
+        renderPartRow();
         parseCSVData(u.csv, b.title + ' ' + u.name + '.csv');
     }
     function loadByPages() {
@@ -1243,10 +1241,35 @@ async function rejectUser(userId) {
         html += '<button class="tb-btn unit-btn" onclick="loadTextbook(\'' + currentTextbook + '\')">整册<span class="tb-sub">' + bookCount(currentTextbook) + '词</span></button>';
         b.units.forEach(function(u, i) {
             var n = u.csv.split('\n').filter(function(x) { return x.trim(); }).length;
-            html += '<button class="tb-btn unit-btn" onclick="loadUnit(' + i + ')">' + u.name + '<span class="tb-sub">第' + u.start + '–' + u.end + '页 · ' + n + '词</span></button>';
+            var ca = u.parts && u.parts[0].csv ? u.parts[0].csv.split('\n').length : 0;
+            var cb = u.parts && u.parts[1].csv ? u.parts[1].csv.split('\n').length : 0;
+            html += '<button class="tb-btn unit-btn" onclick="loadUnit(' + i + ')">' + u.name + '<span class="tb-sub">第' + u.start + '–' + u.end + '页 · ' + n + '词（A ' + ca + ' · B ' + cb + '）</span></button>';
         });
         html += '<div class="page-row"><span>按页数背：第</span><input type="number" id="pageFrom" class="page-input" min="1" placeholder="' + b.units[0].start + '"><span>页到第</span><input type="number" id="pageTo" class="page-input" min="1" placeholder="' + b.units[b.units.length - 1].end + '"><span>页</span><button class="btn btn-primary page-go" onclick="loadByPages()">按页数背</button></div>';
+        html += '<div class="part-row" id="partRow"></div>';
         bar.innerHTML = html;
+        renderPartRow();
+    }
+    var currentUnitIdx = null;
+    function renderPartRow() {
+        var row = document.getElementById('partRow');
+        if (!row) return;
+        if (currentUnitIdx === null || !currentTextbook || !TEXTBOOK_BOOKS[currentTextbook]) { row.innerHTML = ''; return; }
+        var u = TEXTBOOK_BOOKS[currentTextbook].units[currentUnitIdx];
+        if (!u || !u.parts) { row.innerHTML = ''; return; }
+        var ca = u.parts[0].csv ? u.parts[0].csv.split('\n').length : 0;
+        var cb = u.parts[1].csv ? u.parts[1].csv.split('\n').length : 0;
+        row.innerHTML = '<span>' + u.name + ' 分课时：</span>' +
+            '<button class="btn btn-secondary" onclick="loadUnit(' + currentUnitIdx + ')">整单元</button>' +
+            '<button class="btn btn-primary" onclick="loadUnitPart(0)">Part A（' + ca + '词）</button>' +
+            '<button class="btn btn-primary" onclick="loadUnitPart(1)">Part B（' + cb + '词）</button>';
+    }
+    function loadUnitPart(p) {
+        if (!currentTextbook || currentUnitIdx === null) return;
+        var b = TEXTBOOK_BOOKS[currentTextbook];
+        var u = b.units[currentUnitIdx];
+        if (!u || !u.parts) return;
+        parseCSVData(u.parts[p].csv, b.title + ' ' + u.name + ' ' + u.parts[p].name + '.csv');
     }
     // --- DIY mode: parent-picked words + custom sentences ---
     var DiyStore = {
@@ -1274,15 +1297,22 @@ async function rejectUser(userId) {
         var key = document.getElementById('diyBookSel').value;
         var b = TEXTBOOK_BOOKS[key];
         var html = '<option value="-1">整册</option>';
-        b.units.forEach(function(u, i) { html += '<option value="' + i + '">' + u.name + '（第' + u.start + '–' + u.end + '页）</option>'; });
+        b.units.forEach(function(u, i) {
+            html += '<option value="' + i + '">' + u.name + '（第' + u.start + '–' + u.end + '页）</option>';
+            html += '<option value="' + i + ':0">' + u.name + ' · Part A</option>';
+            html += '<option value="' + i + ':1">' + u.name + ' · Part B</option>';
+        });
         document.getElementById('diyUnitSel').innerHTML = html;
     }
     function renderPicker() {
         var key = document.getElementById('diyBookSel').value;
         if (key !== diyLastBook) { diyLastBook = key; renderUnitSel(); }
         var b = TEXTBOOK_BOOKS[key];
-        var ui = parseInt(document.getElementById('diyUnitSel').value, 10);
-        var csv = ui >= 0 ? b.units[ui].csv : mergeUnitCSVs(b.units);
+        var sel = document.getElementById('diyUnitSel').value;
+        var csv;
+        if (sel === '-1') csv = mergeUnitCSVs(b.units);
+        else if (sel.indexOf(':') >= 0) { var pp = sel.split(':'); csv = b.units[parseInt(pp[0], 10)].parts[parseInt(pp[1], 10)].csv; }
+        else csv = b.units[parseInt(sel, 10)].csv;
         var html = '';
         csv.split('\n').forEach(function(line) {
         line = line.trim(); if (!line) return;
@@ -1410,12 +1440,28 @@ async function rejectUser(userId) {
         get: function() { try { return JSON.parse(localStorage.getItem(this.KEY)) || null; } catch (e) { return null; } },
         set: function(v) { try { localStorage.setItem(this.KEY, JSON.stringify(v)); } catch (e) {} }
     };
+    function mergeCSVStrings(list) {
+        var seen = {}, out = [];
+        list.forEach(function(csv) {
+            csv.split('\n').forEach(function(line) {
+                line = line.trim(); if (!line) return;
+                var k = line.split(',')[0].trim().toLowerCase();
+                if (seen[k]) return;
+                seen[k] = 1; out.push(line);
+            });
+        });
+        return out.join('\n');
+    }
     function schoolUnits() {
         var p = SchoolStore.get();
         if (!p || !TEXTBOOK_BOOKS[p.book]) return null;
         var b = TEXTBOOK_BOOKS[p.book];
         var last = Math.min(p.unit, b.units.length - 1);
-        return { book: p.book, title: b.title, last: last, units: b.units.slice(0, last + 1) };
+        var part = (p.part === 0) ? 0 : 1;
+        var csvList = [];
+        for (var i = 0; i < last; i++) csvList.push(b.units[i].csv);
+        csvList.push(part === 1 ? b.units[last].csv : b.units[last].parts[0].csv);
+        return { book: p.book, title: b.title, last: last, part: part, units: b.units.slice(0, last + 1), csvList: csvList };
     }
     function renderSchoolBar() {
         var bar = document.getElementById('schoolBar');
@@ -1425,8 +1471,10 @@ async function rejectUser(userId) {
         bar.innerHTML = '<span class="sb-title">🏫 学校进度</span><span>还没设置，设置后可一键背学校学过的内容</span><button class="btn btn-primary" onclick="openDiyModal()">去设置</button>';
         return;
         }
-        var n = mergeUnitCSVs(sc.units).split('\n').length;
-        bar.innerHTML = '<span class="sb-title">🏫 学校进度：' + sc.title.replace('PEP ', '') + ' · 学到 ' + TEXTBOOK_BOOKS[sc.book].units[sc.last].name + '</span><button class="btn btn-primary" onclick="loadSchoolWords()">▶️ 背学过的内容（Unit 1–' + (sc.last + 1) + ' · ' + n + '词）</button>';
+        var n = mergeCSVStrings(sc.csvList).split('\n').length;
+        var where = '学到 ' + TEXTBOOK_BOOKS[sc.book].units[sc.last].name + (sc.part === 0 ? ' · Part A' : '');
+        var btn = sc.part === 0 ? '▶️ 背学过的内容（到 Unit ' + (sc.last + 1) + ' Part A · ' + n + '词）' : '▶️ 背学过的内容（Unit 1–' + (sc.last + 1) + ' · ' + n + '词）';
+        bar.innerHTML = '<span class="sb-title">🏫 学校进度：' + sc.title.replace('PEP ', '') + ' · ' + where + '</span><button class="btn btn-primary" onclick="loadSchoolWords()">' + btn + '</button>';
     }
     function loadSchoolWords() {
         var sc = schoolUnits();
@@ -1434,7 +1482,7 @@ async function rejectUser(userId) {
         closeDiyModal();
         currentTextbook = sc.book;
         renderUnitBar();
-        parseCSVData(mergeUnitCSVs(sc.units), sc.title + ' 学校进度（Unit 1–' + (sc.last + 1) + '）.csv');
+        parseCSVData(mergeCSVStrings(sc.csvList), sc.title + ' 学校进度（Unit 1–' + (sc.last + 1) + (sc.part === 0 ? ' Part A' : '') + '）.csv');
     }
     function addSchoolWordsToDiy() {
         var sc = schoolUnits();
@@ -1442,7 +1490,7 @@ async function rejectUser(userId) {
         var list = DiyStore.words();
         var seen = {}; list.forEach(function(w) { seen[w.en.toLowerCase()] = 1; });
         var added = 0;
-        mergeUnitCSVs(sc.units).split('\n').forEach(function(line) {
+        mergeCSVStrings(sc.csvList).split('\n').forEach(function(line) {
         line = line.trim(); if (!line) return;
         var idx = line.indexOf(',');
         var en = line.slice(0, idx).trim(), zh = line.slice(idx + 1).trim();
@@ -1465,6 +1513,9 @@ async function rejectUser(userId) {
         if (p && TEXTBOOK_BOOKS[p.book]) bs.value = p.book;
         }
         renderSchoolUnitSel();
+        var ps = document.getElementById('schoolPartSel');
+        var sp = SchoolStore.get();
+        if (ps) ps.value = sp && sp.part === 0 ? '0' : '1';
     }
     function renderSchoolUnitSel() {
         var key = document.getElementById('schoolBookSel').value;
@@ -1479,9 +1530,11 @@ async function rejectUser(userId) {
     function saveSchoolProgress() {
         var book = document.getElementById('schoolBookSel').value;
         var unit = parseInt(document.getElementById('schoolUnitSel').value, 10) || 0;
-        SchoolStore.set({ book: book, unit: unit });
+        var part = parseInt(document.getElementById('schoolPartSel').value, 10);
+        if (isNaN(part)) part = 1;
+        SchoolStore.set({ book: book, unit: unit, part: part });
         renderSchoolBar();
-        alert('学校进度已保存：' + TEXTBOOK_BOOKS[book].title + ' · 学到 ' + TEXTBOOK_BOOKS[book].units[unit].name + '。');
+        alert('学校进度已保存：' + TEXTBOOK_BOOKS[book].title + ' · 学到 ' + TEXTBOOK_BOOKS[book].units[unit].name + (part === 0 ? ' · Part A' : '（整个单元）') + '。');
     }
     // --- My word library: user-added words ---
     var MyWords = {
