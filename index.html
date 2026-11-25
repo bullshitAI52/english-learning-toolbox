@@ -217,6 +217,12 @@
                 <div style="margin: 10px 0;">
                     <button class="btn btn-primary" onclick="addSentences()">➕ 加入句子单</button>
                 </div>
+                <div style="margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <span style="font-weight: 700;">📖 课本句子：</span>
+                    <select id="tbSentBookSel" onchange="renderTbSentUnits()"></select>
+                    <select id="tbSentUnitSel"></select>
+                    <button class="btn btn-secondary" onclick="importTextbookSentences()">📥 导入本单元句子</button>
+                </div>
                 <div id="diySentBox"></div>
             </div>
             <div class="modal-actions" style="padding: 0 20px 18px;">
