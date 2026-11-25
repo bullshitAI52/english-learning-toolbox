@@ -202,6 +202,25 @@
         let reviewWordList = [];
         const WORDS_PER_PAGE = 10;
         function pageSize() { return currentMode === 'dictation' ? Math.max(displayData.length, 1) : WORDS_PER_PAGE; }
+        function shuffleInPlace(arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
+        function advanceDictation(input) {
+            var items = Array.prototype.slice.call(document.querySelectorAll('.word-item'));
+            var card = input.closest('.word-item');
+            var idx = items.indexOf(card);
+            if (idx < 0) return;
+            function solved(it) { var inp = it.querySelector('.input-box'); return inp && inp.dataset && inp.dataset.solved === 'true'; }
+            var order = items.slice(idx + 1).concat(items.slice(0, idx));
+            for (var i = 0; i < order.length; i++) {
+                if (!solved(order[i])) {
+                    var btn = order[i].querySelector('.btn-listen');
+                    var inp = order[i].querySelector('.input-box');
+                    order[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (btn) btn.click();
+                    if (inp) { try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); } }
+                    return;
+                }
+            }
+        }
         const youdaoAPI = 'https://dict.youdao.com/dictvoice?audio=';
 
         // --- Auth Functions ---
@@ -852,6 +871,8 @@ async function rejectUser(userId) {
                 });
             } else if (currentMode === 'dictation') {
                 displayData = allWordData.slice();
+                var __sig = displayData.length + '|' + (displayData.length ? displayData[0].english : '');
+                if (window.__dictSig !== __sig) { window.__dictSig = __sig; shuffleInPlace(displayData); }
             }
         }
 
@@ -1037,6 +1058,7 @@ async function rejectUser(userId) {
                     WordStats.update(correctWord, true);
                     input.dataset.solved = 'true';
                     playCorrectSound();
+                    if (currentMode === 'dictation') { setTimeout(function() { advanceDictation(input); }, 600); }
                 }
                 icon.innerHTML = '';
                 icon.style.color = 'green';
