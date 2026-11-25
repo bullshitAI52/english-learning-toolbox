@@ -1180,4 +1180,5 @@
 .pos-num { background: #EF5350; }
 .pos-conj { background: #78909C; }
 .pos-phr { background: #607D8B; }
+.pos-info { display: block; margin-top: 3px; font-size: 12px; color: #999; font-weight: 400; letter-spacing: .3px; }
 .pos-modal { background: #AB47BC; }
