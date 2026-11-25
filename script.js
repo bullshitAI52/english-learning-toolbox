@@ -1215,17 +1215,50 @@ async function rejectUser(userId) {
         return out.join('\n');
     }
     function bookCount(key) { return mergeUnitCSVs(TEXTBOOK_BOOKS[key].units).split('\n').length; }
-    function renderTextbookBar() {
+    var tbBarOpen = true;
+function toggleTbBar() { tbBarOpen = !tbBarOpen; var b = document.getElementById('tbBody'); if (b) b.style.display = tbBarOpen ? 'contents' : 'none'; var t = document.getElementById('tbTri'); if (t) t.textContent = tbBarOpen ? '▼' : '▶'; }
+var unitBarOpen = true;
+function toggleUnitBar() { unitBarOpen = !unitBarOpen; var b = document.getElementById('unitBody'); if (b) b.style.display = unitBarOpen ? 'contents' : 'none'; var t = document.getElementById('unitTri'); if (t) t.textContent = unitBarOpen ? '▼' : '▶'; }
+function foldUnitBar() { unitBarOpen = false; var b = document.getElementById('unitBody'); if (b) b.style.display = 'none'; var t = document.getElementById('unitTri'); if (t) t.textContent = '▶'; }
+function initCollapsibleSections() {
+    var modal = document.getElementById('diyModal');
+    if (!modal || modal.getAttribute('data-sec-init')) return;
+    modal.setAttribute('data-sec-init', '1');
+    var heads = modal.querySelectorAll('h3');
+    for (var hi = 0; hi < heads.length; hi++) {
+        (function(h) {
+            var body = document.createElement('div');
+            body.className = 'sec-body';
+            var nodes = [];
+            var node = h.nextSibling;
+            while (node && node.tagName !== 'H3') { nodes.push(node); node = node.nextSibling; }
+            if (nodes.length) h.parentNode.insertBefore(body, nodes[0]); else h.parentNode.appendChild(body);
+            for (var ni = 0; ni < nodes.length; ni++) body.appendChild(nodes[ni]);
+            var open = h.textContent.indexOf('家长挑词') >= 0;
+            h.classList.add('sec-head');
+            h.innerHTML = '<span class="sec-tri">' + (open ? '▼' : '▶') + '</span>' + h.innerHTML;
+            body.style.display = open ? '' : 'none';
+            h.addEventListener('click', function() {
+                var isOpen = body.style.display !== 'none';
+                body.style.display = isOpen ? 'none' : '';
+                var tri = h.querySelector('.sec-tri');
+                if (tri) tri.textContent = isOpen ? '▶' : '▼';
+            });
+        })(heads[hi]);
+    }
+}
+function renderTextbookBar() {
         var bar = document.getElementById('textbookBar');
         if (!bar || typeof TEXTBOOK_BOOKS === 'undefined') return;
         var html = '';
         TEXTBOOK_STAGES.forEach(function(g) {
-            html += '<span class="textbook-label">📚 教材词库 · ' + g.stage + '</span>';
+            html += '<span class="textbook-label unit-toggle" onclick="toggleTbBar()"><span id="tbTri">' + (tbBarOpen ? '▼' : '▶') + '</span> 📚 教材词库 · ' + g.stage + '</span><span id="tbBody" style="display:' + (tbBarOpen ? 'contents' : 'none') + '">';
             g.books.forEach(function(it) {
                 var b = TEXTBOOK_BOOKS[it.key];
                 if (!b) return;
                 html += '<button class="tb-btn" onclick="loadTextbook(\'' + it.key + '\')">' + it.short + '<span class="tb-sub">' + b.title.replace('PEP ', '') + ' · ' + bookCount(it.key) + '词</span></button>';
             });
+            html += '</span>';
         });
         bar.innerHTML = html;
     }
@@ -1267,6 +1300,7 @@ async function rejectUser(userId) {
         if (!b) return;
         currentTextbook = key;
         currentUnitIdx = null;
+        unitBarOpen = true;
         renderUnitBar();
         parseCSVData(mergeUnitCSVs(b.units), b.title + '.csv');
     }
@@ -1278,6 +1312,7 @@ async function rejectUser(userId) {
         currentUnitIdx = idx;
         renderPartRow();
         parseCSVData(u.csv, b.title + ' ' + u.name + '.csv');
+        foldUnitBar();
     }
     function loadByPages() {
         if (!currentTextbook) return;
@@ -1290,13 +1325,14 @@ async function rejectUser(userId) {
         var hit = b.units.filter(function(u) { return u.start <= to && u.end >= from; });
         if (!hit.length) { alert('第 ' + from + '–' + to + ' 页没有对应的单元单词（这册课文页是第 ' + b.units[0].start + '–' + b.units[b.units.length - 1].end + ' 页）'); return; }
         parseCSVData(mergeUnitCSVs(hit), b.title + ' 第' + from + '–' + to + '页.csv');
+        foldUnitBar();
     }
     function renderUnitBar() {
         var bar = document.getElementById('unitBar');
         if (!bar) return;
         if (!currentTextbook) { bar.innerHTML = ''; return; }
         var b = TEXTBOOK_BOOKS[currentTextbook];
-        var html = '<span class="textbook-label">' + b.title.replace('PEP ', '') + ' · 按单元背</span>';
+        var html = '<span class="textbook-label unit-toggle" onclick="toggleUnitBar()"><span id="unitTri">' + (unitBarOpen ? '▼' : '▶') + '</span> ' + b.title.replace('PEP ', '') + ' · 按单元背</span><div id="unitBody" style="display:' + (unitBarOpen ? 'contents' : 'none') + '">';
         html += '<button class="tb-btn unit-btn" onclick="loadTextbook(\'' + currentTextbook + '\')">整册<span class="tb-sub">' + bookCount(currentTextbook) + '词</span></button>';
         b.units.forEach(function(u, i) {
             var n = u.csv.split('\n').filter(function(x) { return x.trim(); }).length;
@@ -1305,7 +1341,7 @@ async function rejectUser(userId) {
             html += '<button class="tb-btn unit-btn" onclick="loadUnit(' + i + ')">' + u.name + '<span class="tb-sub">第' + u.start + '–' + u.end + '页 · ' + n + '词（A ' + ca + ' · B ' + cb + '）</span></button>';
         });
         html += '<div class="page-row"><span>按页数背：第</span><input type="number" id="pageFrom" class="page-input" min="1" placeholder="' + b.units[0].start + '"><span>页到第</span><input type="number" id="pageTo" class="page-input" min="1" placeholder="' + b.units[b.units.length - 1].end + '"><span>页</span><button class="btn btn-primary page-go" onclick="loadByPages()">按页数背</button></div>';
-        html += '<div class="part-row" id="partRow"></div>';
+        html += '<div class="part-row" id="partRow"></div></div>';
         bar.innerHTML = html;
         renderPartRow();
     }
@@ -1329,6 +1365,7 @@ async function rejectUser(userId) {
         var u = b.units[currentUnitIdx];
         if (!u || !u.parts) return;
         parseCSVData(u.parts[p].csv, b.title + ' ' + u.name + ' ' + u.parts[p].name + '.csv');
+        foldUnitBar();
     }
     // --- DIY mode: parent-picked words + custom sentences ---
     var DiyStore = {
@@ -1340,7 +1377,7 @@ async function rejectUser(userId) {
         saveSents: function(x) { try { localStorage.setItem(this.SKEY, JSON.stringify(x)); } catch (e) {} }
     };
     function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-    function openDiyModal() { initSchoolPicker(); initDiyPicker(); renderDiyWords(); renderMyWords(); initTbSentPicker(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
+    function openDiyModal() { initCollapsibleSections(); initSchoolPicker(); initDiyPicker(); renderDiyWords(); renderMyWords(); initTbSentPicker(); renderDiySents(); document.getElementById('diyModal').style.display = 'flex'; }
     function closeDiyModal() { document.getElementById('diyModal').style.display = 'none'; }
     var diyLastBook = null;
     function initDiyPicker() {

@@ -1164,3 +1164,7 @@
     #printArea td.zh { font-size: 14px; }
     #printArea td.write { height: 30px; }
 }
+
+.sec-head { cursor: pointer; user-select: none; }
+.sec-tri { display: inline-block; width: 18px; color: #58CC02; font-size: 13px; }
+.unit-toggle { cursor: pointer; user-select: none; }
