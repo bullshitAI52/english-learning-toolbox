@@ -913,8 +913,10 @@ async function rejectUser(userId) {
                         '<button class="btn-icon btn-spell" onclick="showSpelling(\'' + esc + '\')" title="拼写示范">拼写</button>' +
                         '<button class="btn-icon btn-hint" onclick="showHint(this, \'' + esc + '\')" title="提示">提示</button>' +
                         '<button class="btn-icon btn-ex" onclick="toggleExample(this, \'' + esc + '\')" title="例句">例句</button>' +
+                        formsBtn(word.english) +
                         '<div class="hint-line"></div>' +
                         '<div class="ex-line"></div>' +
+                        '<div class="forms-line"></div>' +
                     '</div>';
                 if (isDictation) {
                     return '<div class="word-item">' +
@@ -1714,10 +1716,27 @@ var WORD_FORMS = {"Alaska": {"pill": "专有名词", "cls": "n", "info": ""}, "a
 function posBadge(en) {
     if (!en) return '';
     var f = WORD_FORMS[en] || WORD_FORMS[String(en).toLowerCase()];
-    if (f) return '<span class="pos-badge pos-' + f.cls + '">' + f.pill + '</span>' + (f.info ? '<span class="pos-info">' + f.info + '</span>' : '');
+    if (f) return '<span class="pos-badge pos-' + f.cls + '">' + f.pill + '</span>';
     var c = WORD_POS[en] || WORD_POS[String(en).toLowerCase()];
     if (!c || !POS_LABELS[c]) return '';
     return '<span class="pos-badge pos-' + c + '">' + POS_LABELS[c] + '</span>';
+}
+function formsInfo(en) {
+    if (!en) return '';
+    var f = WORD_FORMS[en] || WORD_FORMS[String(en).toLowerCase()];
+    return f ? f.info : '';
+}
+function formsBtn(en) {
+    if (!formsInfo(en)) return '';
+    return '<button class="btn-icon btn-form" onclick="toggleForms(this, \'' + String(en).replace(/'/g, "\\'") + '\')" title="变形（复数 / 过去式 / 三单）">变形</button>';
+}
+function toggleForms(btn, en) {
+    var card = btn.closest('.word-item');
+    var line = card.querySelector('.forms-line');
+    if (!line) return;
+    if (line.style.display === 'block') { line.style.display = 'none'; return; }
+    line.innerText = '🔤 ' + formsInfo(en);
+    line.style.display = 'block';
 }
 /* ===== 打印词单 / 听写纸 ===== */
 function printEsc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
